@@ -18,6 +18,7 @@ test("hosted and fallback verification share the complete command contract and p
     { command: "npm", args: ["run", "typecheck"] },
     { command: "npm", args: ["run", "build"] },
     { command: "node", args: ["--test", "dist/tests/*.test.js"] },
+    { command: "node", args: ["scripts/verify-codex.mjs"] },
     { command: "npm", args: ["run", "audit:public"] },
     { command: "npm", args: ["audit", "--audit-level=high"] },
     {

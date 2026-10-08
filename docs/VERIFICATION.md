@@ -8,11 +8,13 @@ Use the exact Node/npm versions in `.node-version` and `.npm-version`. The autho
 node scripts/ci.mjs
 ```
 
-The commands install from the lockfile, run formatting/type checks, compile and run all tests, scan publishable files, audit dependencies, and run the synthetic demo. The `tests/ci-contract.test.ts` check ties the workflow, pins and shared runner to this contract. Any required-command change must update this contract, documentation and consistency test together.
+The commands install from the lockfile, run formatting/type checks, compile and run all tests, execute `node scripts/verify-codex.mjs` against pinned Codex CLI 0.144.4, scan publishable files, audit dependencies, and run the synthetic demo. The `tests/ci-contract.test.ts` check ties the workflow, pins and shared runner to this contract. Any required-command change must update this contract, documentation and consistency test together.
 
 `.cache/verification/<timestamp>/evidence.json` records commit SHA, tree SHA, workspace state before/after, lockfile hash, Node/npm versions, OS/architecture, every command and exit code, full log paths and semantic limitations. Files are local and ignored. Hosted results are independently visible in the authenticated Actions run.
 
-The tests include two profiles/time zones, stable identity, changed and unchanged imports, retained exact bytes, current-version reversions, date conflicts, personal-plan/progress preservation, localization, strict validation, corrupted objects, symlink refusal, concurrent writers, a real CLI walkthrough, and child processes killed before/after database commit. SIGKILL is not proof of hardware power-loss durability. The tests use only original synthetic data.
+The tests include two profiles/time zones, stable identity, changed and unchanged imports, retained exact bytes, current-version reversions, date conflicts, personal-plan/progress preservation, localization, strict validation, corrupted objects, symlink refusal, concurrent writers, a real CLI walkthrough, and child processes killed before/after database commit. SIGKILL is not proof of hardware power-loss durability. The tests use only original synthetic data. M2 adds exact-version reads, real PDF page extraction (including blank and invalid documents), quote/location validation, preserved note history, conflicting edits, explicit M1 migration and a real stdio MCP client workflow.
+
+The required Codex acceptance command builds and relocates a complete plugin, installs it in isolated child-process configuration, discovers all six Skills and 14 tools, performs a learning-record workflow through Codex app-server, and installs a newer synthetic version while preserving records, a user file and configuration. JSON evidence and logs are retained in `.cache/codex-acceptance-*/`. No model turn, teaching-quality evaluation, desktop UI interaction, school login or reminder delivery is tested. Client catalog traffic may occur; no personal credentials are supplied.
 
 ## Narrow fallback eligibility
 

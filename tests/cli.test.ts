@@ -65,6 +65,25 @@ test("CLI completes documented synthetic workflow and reports misuse with nonzer
     existsSync(String((run("nav") as Record<string, unknown>).path)),
     true,
   );
+  const reading = run("read", ["--input", fixture("reading.json")]) as {
+    parts: { text: string }[];
+  };
+  assert.match(reading.parts[0]!.text, /A label is not an identity/);
+  const note = run("note", ["--input", fixture("note.json")]) as {
+    changed: boolean;
+    path: string;
+  };
+  assert.equal(note.changed, true);
+  assert.equal(existsSync(note.path), true);
+  assert.equal(
+    (run("note", ["--input", fixture("note.json")]) as { changed: boolean })
+      .changed,
+    false,
+  );
+  assert.equal(
+    (run("upgrade") as { workspaceSchema: number }).workspaceSchema,
+    2,
+  );
   run("snapshot");
   run("task", [], 1);
   run("snapshot", ["--file", "unused.md"], 1);

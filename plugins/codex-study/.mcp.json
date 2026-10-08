@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "study": {
+      "command": "node",
+      "args": ["scripts/start.mjs"],
+      "cwd": "."
+    }
+  }
+}

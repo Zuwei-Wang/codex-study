@@ -1,7 +1,9 @@
 # Behavioral verification
 
-`npm test` compiles and runs the Node test runner against synthetic fixtures. `node scripts/ci.mjs` is the complete standard verification, including formatting, type checks, source guard, dependency audit and demo.
+`npm test` compiles and runs the Node test runner against synthetic fixtures. `node scripts/ci.mjs` is the complete standard verification, including formatting, type checks, a real Codex installation/MCP/upgrade acceptance workflow, source guard, dependency audit and demo.
 
 Tests exercise record validation, two language/time-zone profiles, identity boundaries, byte retention and deduplication, task conflicts/history, progress preservation, partial/failed observations, navigation links/escaping, corruption and symlink refusal, CLI behavior, concurrent importers and actual process death around commit. Temporary workspaces live under ignored `tmp/tests` and are cleaned after each test.
 
-Browser access, Codex installation, live teaching coverage, scheduling and delivery are not tested or claimed. See [verification](../docs/VERIFICATION.md).
+M2 tests also cover PDF/Markdown text extraction, invalid or unsupported documents, exact citation validation, note revisions and conflicting edits, explicit schema migration, and real MCP client calls. `scripts/verify-codex.mjs` installs a relocated package through pinned Codex CLI using fresh child configuration, invokes study tools, then verifies a plugin upgrade preserves records and settings.
+
+Model-generated teaching quality, desktop UI behavior, browser access, live teaching coverage, scheduling and delivery are not tested or claimed. See [verification](../docs/VERIFICATION.md).

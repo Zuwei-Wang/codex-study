@@ -3,7 +3,7 @@ import { parseArgs } from "node:util";
 import { readRegular } from "../../core/src/storage.js";
 import { Workspace } from "../../core/src/index.js";
 
-const usage = `Codex Study — M1 local workflow
+const usage = `Codex Study — local study workflow
 
 study init --workspace PATH --config config.json
 study course --workspace PATH --input course.json
@@ -14,12 +14,15 @@ study attempt --workspace PATH --course COURSE_ID --source SOURCE_ID --input att
 study snapshot --workspace PATH
 study nav --workspace PATH
 study doctor --workspace PATH
+study upgrade --workspace PATH
+study read --workspace PATH --input reading.json
+study note --workspace PATH --input note.json
 
 All writes stay in PATH/.study. JSON inputs are validated; see examples/demo-workspace.
-School platforms, MCP, scheduling and notifications are not implemented.
+School platforms, scheduling and notifications are not implemented.
 `;
 
-function main(): void {
+async function main(): Promise<void> {
   const { values, positionals } = parseArgs({
     allowPositionals: true,
     strict: true,
@@ -49,6 +52,9 @@ function main(): void {
     snapshot: ["workspace"],
     nav: ["workspace"],
     doctor: ["workspace"],
+    upgrade: ["workspace"],
+    read: ["workspace", "input"],
+    note: ["workspace", "input"],
   };
   if (!allowed[command]) throw new Error(`Unknown command: ${command}`);
   for (const key of Object.keys(values))
@@ -66,12 +72,14 @@ function main(): void {
   const workspace =
     command === "init"
       ? Workspace.initialize(required("workspace"), json("config"))
-      : new Workspace(required("workspace"));
+      : new Workspace(required("workspace"), {
+          migrate: command === "upgrade",
+        });
   try {
     let result: unknown;
     switch (command) {
       case "init":
-        result = { root: workspace.root, schemaVersion: 1 };
+        result = { root: workspace.root, workspaceSchema: 2 };
         break;
       case "course":
         result = workspace.putCourse(json("input"));
@@ -99,6 +107,15 @@ function main(): void {
       case "snapshot":
         result = workspace.snapshot();
         break;
+      case "upgrade":
+        result = { workspaceSchema: 2, integrity: workspace.doctor() };
+        break;
+      case "read":
+        result = await workspace.readMaterial(json("input"));
+        break;
+      case "note":
+        result = await workspace.saveNote(json("input"));
+        break;
       case "nav":
         result = { path: workspace.navigation() };
         break;
@@ -115,7 +132,7 @@ function main(): void {
   }
 }
 try {
-  main();
+  await main();
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
   process.exitCode = 1;

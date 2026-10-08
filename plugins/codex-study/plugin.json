@@ -1,0 +1,21 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "codex-study",
+  "version": "0.2.0",
+  "description": "Local course records, versioned materials, cited study notes and learning workflows.",
+  "author": { "name": "Codex Study contributors" },
+  "repository": "https://github.com/Zuwei-Wang/codex-study",
+  "license": "MIT",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Codex Study",
+        "shortDescription": "Learn from your local course materials",
+        "developerName": "Codex Study contributors",
+        "category": "Productivity",
+        "capabilities": ["Read", "Write"]
+      },
+      "onboardingSkill": "./skills/study-setup/SKILL.md"
+    }
+  }
+}

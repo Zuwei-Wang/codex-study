@@ -32,6 +32,14 @@ import {
   writeImmutable,
 } from "./storage.js";
 import { renderNavigation } from "./navigation.js";
+import {
+  materialReadSchema,
+  noteSaveSchema,
+  renderNote,
+  type NoteRecord,
+  type Reading,
+} from "./learning.js";
+import { extractMaterial } from "./reader.js";
 
 const APP_ID = 1129534549;
 const schema = `
@@ -74,8 +82,20 @@ const schema = `
   );
 `;
 type Row = Record<string, string | number | bigint | null | Uint8Array>;
+const learningSchema = `
+  CREATE TABLE note_revisions (
+    course_id TEXT NOT NULL REFERENCES courses(id), id TEXT NOT NULL,
+    revision TEXT NOT NULL, data TEXT NOT NULL, PRIMARY KEY(course_id,id,revision)
+  );
+  CREATE TABLE note_heads (
+    course_id TEXT NOT NULL, id TEXT NOT NULL, revision TEXT NOT NULL,
+    PRIMARY KEY(course_id,id), FOREIGN KEY(course_id,id,revision) REFERENCES note_revisions(course_id,id,revision)
+  );
+  PRAGMA user_version = 2;
+`;
 export type Checkpoint = "object-durable" | "before-commit" | "after-commit";
 export interface WorkspaceOptions {
+  migrate?: boolean;
   now?: () => string;
   /** Fault injection for tests; never exposed through CLI input. */
   checkpoint?: (point: Checkpoint) => void;
@@ -114,6 +134,7 @@ export interface Snapshot {
   materials: Material[];
   tasks: Task[];
   progress: ProgressRecord[];
+  notes?: NoteRecord[];
   taskHistory: { task: Task; observedAt: string; hash: string }[];
   attempts: {
     courseId: string;
@@ -155,7 +176,7 @@ export class Workspace {
     const db = new DatabaseSync(join(staging, "records.sqlite"));
     try {
       db.exec("PRAGMA synchronous=FULL; BEGIN IMMEDIATE;");
-      db.exec(schema);
+      db.exec(schema + learningSchema);
       db.prepare("INSERT INTO config VALUES(1,?)").run(JSON.stringify(config));
       db.exec("COMMIT");
     } finally {
@@ -195,8 +216,18 @@ export class Workspace {
       );
       const app = this.db.prepare("PRAGMA application_id").get() as Row;
       const version = this.db.prepare("PRAGMA user_version").get() as Row;
-      if (app.application_id !== APP_ID || version.user_version !== 1)
+      if (
+        app.application_id !== APP_ID ||
+        ![1, 2].includes(Number(version.user_version))
+      )
         throw new Error("Unsupported workspace database or schema version");
+      if (version.user_version === 1) {
+        if (!options.migrate)
+          throw new Error(
+            "Workspace schema 1 requires an explicit upgrade before M2 use",
+          );
+        this.transaction(() => this.db.exec(learningSchema));
+      }
       configSchema.parse(
         JSON.parse(
           String(
@@ -211,6 +242,167 @@ export class Workspace {
   }
   close(): void {
     this.db.close();
+  }
+
+  async readMaterial(input: unknown): Promise<Reading> {
+    const request = materialReadSchema.parse(input);
+    const version = this.db
+      .prepare(
+        "SELECT * FROM versions WHERE course_id=? AND source_id=? AND hash=?",
+      )
+      .get(request.courseId, request.sourceId, request.hash);
+    if (!version)
+      throw new Error(
+        "Unknown material version; inspect the workspace snapshot for its exact hash",
+      );
+    const bytes = readRegular(
+      join(this.storage, "objects", `${request.hash}.${version.format}`),
+    );
+    if (sha256(bytes) !== request.hash)
+      throw new Error("Archive hash mismatch; reading refused");
+    const extracted = await extractMaterial(
+      bytes,
+      String(version.format),
+      request.start,
+      request.count,
+    );
+    if (!extracted)
+      return {
+        schemaVersion: 1,
+        courseId: request.courseId,
+        sourceId: request.sourceId,
+        hash: request.hash,
+        unit: "section",
+        total: 0,
+        parts: [],
+        status: "unsupported",
+        untrusted: true,
+        warnings: [
+          `${version.format} is archived but has no M2 reader. Supply an explicit PDF/text export as a distinct source; do not infer its contents.`,
+        ],
+      };
+    const partial = extracted.parts.some(
+      (part) => part.truncated || !part.text.trim(),
+    );
+    return {
+      schemaVersion: 1,
+      courseId: request.courseId,
+      sourceId: request.sourceId,
+      hash: request.hash,
+      ...extracted,
+      status: partial ? "partial" : "complete",
+      untrusted: true,
+      warnings: [
+        ...extracted.warnings,
+        ...(partial
+          ? [
+              "One or more requested units have no extractable text or were truncated. Unseen content remains unknown.",
+            ]
+          : []),
+      ],
+    };
+  }
+
+  async saveNote(
+    input: unknown,
+  ): Promise<{ changed: boolean; record: NoteRecord; path: string }> {
+    const { note, expectedRevision } = noteSaveSchema.parse(input);
+    this.requireCourse(note.courseId);
+    const formats = new Map<string, string>();
+    // Validate each quoted location against immutable bytes, not model-supplied page counts.
+    for (const section of note.sections)
+      for (const citation of section.citations) {
+        const reading = await this.readMaterial({
+          courseId: note.courseId,
+          sourceId: citation.sourceId,
+          hash: citation.hash,
+          start: citation.start,
+          count: citation.end - citation.start + 1,
+        });
+        if (
+          reading.status === "unsupported" ||
+          reading.unit !== citation.unit ||
+          reading.parts.at(-1)?.number !== citation.end
+        )
+          throw new Error(
+            "Citation location is not supported or outside the material",
+          );
+        const normalize = (s: string) => s.replace(/\s+/g, " ").trim();
+        if (
+          !normalize(reading.parts.map((p) => p.text).join("\n")).includes(
+            normalize(citation.quote),
+          )
+        )
+          throw new Error(
+            "Citation quote was not found in the requested material units",
+          );
+        const row = this.db
+          .prepare(
+            "SELECT format FROM versions WHERE course_id=? AND source_id=? AND hash=?",
+          )
+          .get(note.courseId, citation.sourceId, citation.hash)!;
+        formats.set(
+          `${citation.sourceId}:${citation.hash}`,
+          String(row.format),
+        );
+      }
+    const revision = sha256(JSON.stringify(note));
+    const relativePath = `notes/${revision}.md`;
+    const bytes = Buffer.from(renderNote(note, formats));
+    return this.transaction(() => {
+      const head = this.db
+        .prepare("SELECT revision FROM note_heads WHERE course_id=? AND id=?")
+        .get(note.courseId, note.id);
+      if (
+        head?.revision !== revision &&
+        (head?.revision ?? null) !== expectedRevision
+      )
+        throw new Error(
+          "Note revision conflict; read the current note before editing",
+        );
+      directory(join(this.storage, "notes"));
+      syncDirectory(this.storage);
+      writeImmutable(join(this.storage, relativePath), bytes);
+      const existing = this.db
+        .prepare(
+          "SELECT data FROM note_revisions WHERE course_id=? AND id=? AND revision=?",
+        )
+        .get(note.courseId, note.id, revision);
+      const record: NoteRecord = existing
+        ? JSON.parse(String(existing.data))
+        : {
+            schemaVersion: 1,
+            note,
+            revision,
+            relativePath,
+            createdAt: this.now(),
+            fileHash: sha256(bytes),
+          };
+      this.db
+        .prepare("INSERT OR IGNORE INTO note_revisions VALUES(?,?,?,?)")
+        .run(note.courseId, note.id, revision, JSON.stringify(record));
+      this.db
+        .prepare(
+          "INSERT INTO note_heads VALUES(?,?,?) ON CONFLICT(course_id,id) DO UPDATE SET revision=excluded.revision",
+        )
+        .run(note.courseId, note.id, revision);
+      return {
+        changed: head?.revision !== revision,
+        record,
+        path: join(this.storage, relativePath),
+      };
+    });
+  }
+
+  noteHistory(courseId: string, id: string): NoteRecord[] {
+    idSchema.parse(courseId);
+    idSchema.parse(id);
+    return this.db
+      .prepare(
+        "SELECT data FROM note_revisions WHERE course_id=? AND id=? ORDER BY rowid",
+      )
+      .all(courseId, id)
+      .map((r) => JSON.parse(String(r.data)) as NoteRecord);
   }
   private now(): string {
     return instantSchema.parse(
@@ -507,6 +699,12 @@ export class Workspace {
             at: String(r.at),
             evidence: String(r.evidence),
           })),
+        notes: this.db
+          .prepare(
+            "SELECT r.data FROM note_heads h JOIN note_revisions r USING(course_id,id,revision) ORDER BY h.course_id,h.id",
+          )
+          .all()
+          .map((r) => JSON.parse(String(r.data)) as NoteRecord),
         attempts: this.db
           .prepare("SELECT * FROM attempts ORDER BY sequence")
           .all()
@@ -560,6 +758,30 @@ export class Workspace {
     const recoverableFiles = readdirSync(join(this.storage, "objects"))
       .filter((name) => !expected.has(name))
       .map((name) => `objects/${name}`);
+    const noteFiles = new Set<string>();
+    for (const row of this.db
+      .prepare("SELECT data FROM note_revisions")
+      .all()) {
+      const note = JSON.parse(String(row.data)) as NoteRecord;
+      noteFiles.add(note.relativePath);
+      try {
+        if (
+          sha256(readRegular(join(this.storage, note.relativePath))) !==
+          note.fileHash
+        )
+          issues.push(`Corrupt note: ${note.note.id}`);
+      } catch {
+        issues.push(`Missing or unreadable note: ${note.note.id}`);
+      }
+    }
+    if (existsSync(join(this.storage, "notes"))) {
+      directory(join(this.storage, "notes"));
+      recoverableFiles.push(
+        ...readdirSync(join(this.storage, "notes"))
+          .map((name) => `notes/${name}`)
+          .filter((name) => !noteFiles.has(name)),
+      );
+    }
     recoverableFiles.push(
       ...readdirSync(join(this.storage, "navigation"))
         .filter((name) => name.startsWith(".pending-"))

@@ -32,6 +32,45 @@ try {
     file: fixture("fixtures/v2/intro.md"),
   });
   workspace.putTask(json("task.json"));
+  const reading = await workspace.readMaterial({
+    courseId: "DEMO101",
+    sourceId: "lecture-intro",
+    hash: first.hash,
+    start: 2,
+    count: 1,
+  });
+  assert.match(reading.parts[0]!.text, /A label is not an identity/);
+  const note = await workspace.saveNote({
+    expectedRevision: null,
+    note: {
+      schemaVersion: 1,
+      courseId: "DEMO101",
+      id: "identity",
+      title: "Identity and evidence",
+      coverage: { basis: "published-material" },
+      sections: [
+        {
+          kind: "material",
+          body: "The synthetic deck distinguishes a label from a stable identity.",
+          citations: [
+            {
+              sourceId: "lecture-intro",
+              hash: first.hash,
+              unit: "section",
+              start: 2,
+              end: 2,
+              quote: "A label is not an identity.",
+            },
+          ],
+        },
+        {
+          kind: "self-test",
+          body: "Why might two files with the same name need separate source identities?",
+          citations: [],
+        },
+      ],
+    },
+  });
   const snapshot = workspace.snapshot();
   assert.equal(snapshot.materials[0]?.versions.length, 2);
   assert.equal(snapshot.progress.length, 1);
@@ -48,6 +87,7 @@ try {
         versions: snapshot.materials[0]?.versions.length,
         officialDeadlineState: "conflict",
         recordedProgress: snapshot.progress.map((p) => p.stage),
+        citedNote: note.path,
         navigation: workspace.navigation(),
         doctor: workspace.doctor(),
       },

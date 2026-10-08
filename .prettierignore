@@ -4,3 +4,4 @@ dist
 tmp
 package-lock.json
 LICENSE
+build

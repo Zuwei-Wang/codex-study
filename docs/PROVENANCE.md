@@ -4,7 +4,7 @@
 
 Project source and the synthetic Markdown decks/JSON fixtures were created specifically for Codex Study. No real lecture slides, student records, personal notes, private calendars, school/browser credentials, production logs, backups, or existing project history are included. No code from an existing personal learning system was copied. The repository's original material is licensed under [MIT](../LICENSE).
 
-External dependencies retain their own licenses: Zod (MIT), TypeScript (Apache-2.0), Prettier (MIT), Node type definitions (MIT), and their lockfile dependencies. Node.js and GitHub Actions are separately distributed tools with their own licenses. Exact dependency resolution is in `package-lock.json`; dependencies are installed rather than vendored.
+External dependencies retain their own licenses: Zod (MIT), TypeScript (Apache-2.0), Prettier (MIT), Node type definitions (MIT), MCP TypeScript SDK (Apache-2.0), PDF.js (Apache-2.0), Codex CLI used for development acceptance (Apache-2.0), and their lockfile dependencies. Node.js and GitHub Actions are separately distributed tools with their own licenses. Exact dependency resolution is in `package-lock.json`; dependencies are not committed to Git. The local plugin build copies the installed production dependency closure, including each dependency's license, into ignored generated output; it retains the source lockfile for provenance. The synthetic PDF test generator creates original minimal PDF bytes at runtime, with no third-party document content.
 
 ## What is reviewed before upload
 

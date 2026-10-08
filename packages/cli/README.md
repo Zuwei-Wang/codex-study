@@ -1,5 +1,5 @@
 # Local CLI
 
-Run `npm run build`, then `npm run study -- --help` from the repository root. Implemented commands: `init`, `course`, `import`, `task`, `progress`, `attempt`, `snapshot`, `nav`, `doctor`.
+Run `npm run build`, then `npm run study -- --help` from the repository root. Commands: `init`, `upgrade`, `course`, `import`, `task`, `progress`, `attempt`, `snapshot`, `read`, `note`, `nav`, `doctor`.
 
-The wrapper validates command-line options and delegates domain operations to core. Each command uses `--workspace PATH`; writes stay under `PATH/.study`, except recoverable initialization staging directories in `PATH`. All source JSON is treated as data. See the root README for a runnable walkthrough. No npm package or globally installed command is published.
+The wrapper validates options and delegates to core. Commands use `--workspace PATH`; writes stay under `PATH/.study`, except recoverable initialization staging directories in `PATH`. `read` takes exact-version reading JSON; `note` takes a cited note plus the expected current revision (null when new). Inputs are data, never scripts. See the root README and synthetic example inputs. No globally installed npm command is published.

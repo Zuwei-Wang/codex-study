@@ -87,6 +87,14 @@ export function renderNavigation(snapshot: Snapshot): string {
         `  - ${label("Recorded progress", "已记录进度")}: ${progress.map((p) => `${p.stage} (${p.at}; ${escape(p.evidence)})`).join(", ") || label("none", "无")}`,
       );
     }
+    lines.push("", `### ${label("Notes", "笔记")}`, "");
+    for (const record of (snapshot.notes ?? []).filter(
+      (n) => n.note.courseId === course.id,
+    )) {
+      lines.push(
+        `- [${escape(record.note.title)}](../${record.relativePath}) · ${record.note.coverage.basis} · ${record.createdAt}`,
+      );
+    }
     lines.push("");
   }
   if (!snapshot.courses.length)

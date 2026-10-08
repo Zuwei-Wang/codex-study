@@ -1,5 +1,5 @@
-# Codex Study plugin
+# Codex Study plugin source
 
-Planned home for the plugin manifest, MCP wiring and focused learning Skills: setup, course update checks, class preparation, slide-based learning and weekly review.
+This source template contains portable and Codex compatibility manifests, stdio MCP configuration, a launcher and six focused learning Skills. Build a complete installation package with `npm run plugin:build -- build/marketplace-v0.2.0` from the repository root; the source template alone has no runtime code or dependencies.
 
-This directory is not yet an installable plugin. Add and validate its package only after the referenced local tools work. Installing the plugin must not silently enable scheduled runs, notification delivery or external uploads.
+MCP startup uses a plugin-relative working directory. User learning data must remain outside the installed package. Installation neither creates a learning workspace nor enables scheduling, uploads or notifications. Follow [installation and upgrade instructions](../../docs/INSTALLATION.md) in the source repository.

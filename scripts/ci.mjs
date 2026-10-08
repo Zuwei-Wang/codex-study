@@ -66,7 +66,7 @@ const report = {
   limitations: [
     "Only this OS, architecture and local filesystem were exercised.",
     "SIGKILL tests are not hardware power-loss tests; no network filesystem or Windows support is claimed.",
-    "No browser, school platform, Codex installation or real notification delivery is tested.",
+    "Codex CLI plugin installation and MCP calls are tested in isolated configuration; no model turn, teaching quality, desktop UI, browser, school platform or real notification delivery is tested.",
     "Local evidence is not GitHub required-check success and grants no merge, deployment or publication authority.",
   ],
   commands: [],
@@ -117,7 +117,16 @@ report.lockSha256After = createHash("sha256")
   .update(readFileSync("package-lock.json"))
   .digest("hex");
 report.installedTools = Object.fromEntries(
-  ["typescript", "prettier", "zod", "@types/node"].map((name) => {
+  [
+    "typescript",
+    "prettier",
+    "zod",
+    "@types/node",
+    "@modelcontextprotocol/server",
+    "@modelcontextprotocol/client",
+    "pdfjs-dist",
+    "@openai/codex",
+  ].map((name) => {
     try {
       return [
         name,

@@ -1,0 +1,28 @@
+{
+  "expectedRevision": null,
+  "note": {
+    "schemaVersion": 1,
+    "courseId": "DEMO101",
+    "id": "identity-cli",
+    "title": "Synthetic identity lesson",
+    "coverage": {
+      "basis": "published-material"
+    },
+    "sections": [
+      {
+        "kind": "material",
+        "body": "The synthetic deck distinguishes labels from stable identities.",
+        "citations": [
+          {
+            "sourceId": "lecture-intro",
+            "hash": "1e0bfdb7ccd971f78a16834e920b85522b5f9a328ce3f34aee8029db7b0c45d3",
+            "unit": "section",
+            "start": 2,
+            "end": 2,
+            "quote": "A label is not an identity."
+          }
+        ]
+      }
+    ]
+  }
+}

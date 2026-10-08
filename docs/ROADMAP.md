@@ -1,6 +1,6 @@
 # Development roadmap
 
-Status: M1 is implemented as a developer preview. M2–M5 remain planned, except that MIT licensing, public-source review, documentation and standard CI have been brought forward for the public M1 showcase.
+Status: M1 and M2 are implemented as developer previews. M3–M5 remain planned, except that MIT licensing, public-source review, documentation and standard CI have been brought forward. AI teaching quality and desktop UI behavior still require pilot evaluation.
 
 ## M1 — A working synthetic local workflow (implemented)
 
@@ -12,14 +12,16 @@ Status: M1 is implemented as a developer preview. M2–M5 remain planned, except
 
 Acceptance: synthetic profiles with different paths and time zones work; a repeated run is stable; interrupted writes are recoverable; conflicting deadlines and user progress survive imports.
 
-## M2 — Codex integration
+## M2 — Codex integration (implemented developer preview)
 
-- Expose tested core operations through CLI and local MCP wrappers.
-- Package setup, course updates, class preparation, slide-based learning and weekly review Skills.
+- Expose tested core operations through CLI and 14 local MCP tools.
+- Read Markdown/TXT sections and original PDF text pages with explicit visual/OCR limitations.
+- Save immutable cited note revisions, validate exact source locations and quotes, and refuse conflicting edits.
+- Package setup, course updates, class preparation, slide-based learning, self-test and weekly review Skills.
 - Add installation and capability diagnostics, and test installation on a clean user configuration.
 - Keep user workspace data outside the installed plugin and preserve it across plugin upgrades.
 
-Acceptance: a new user can complete setup and a slide-learning workflow through Codex without manually editing data files. Notes contain traceable references and do not claim unobserved class attendance or coverage.
+Acceptance evidence: the actual pinned Codex CLI installs a relocated package in a fresh configuration, discovers all six Skills, calls setup/import/read/note/task/progress tools, and refreshes to a newer synthetic version without changing records or configuration. Notes validate traceable references and label published-material coverage. This verifies client integration; no model turn or real learner trial has been evaluated.
 
 ## M3 — Verified course-platform checks
 

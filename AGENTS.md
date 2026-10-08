@@ -3,7 +3,7 @@
 ## Scope and status
 
 - This repository contains the generic, local-first study workflow product. Read README.md and docs/ROADMAP.md before implementation.
-- M1 is implemented as a local core and CLI. Do not report planned plugin tools, integrations, scheduled jobs, or notification services as implemented.
+- M1/M2 core, CLI, local MCP, readers, cited notes and plugin packaging are implemented as developer previews. Do not report school integrations, scheduled jobs, notification services or AI teaching quality as verified.
 - Keep changes inside this project unless the user authorizes a specific external operation. Existing personal learning workspaces and deployed services are separate systems.
 
 ## Public-source boundary
