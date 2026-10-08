@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { sha256 } from "../../../packages/core/src/storage.js";
 export type Message = {
   to: string;
   subject: string;
@@ -7,6 +8,8 @@ export type Message = {
 };
 export interface MailProvider {
   readonly mode: "synthetic" | "resend";
+  /** Digest only: binds persistent retries to the same provider account and sender. */
+  readonly deliveryScope: string;
   send(message: Message, key: string): Promise<string>;
   status(
     id: string,
@@ -24,6 +27,7 @@ export class ProviderError extends Error {
 /** Explicitly synthetic; never opens a network connection. */
 export class MockMailProvider implements MailProvider {
   readonly mode = "synthetic" as const;
+  readonly deliveryScope = sha256("codex-study-synthetic-mail-v1");
   readonly messages = new Map<string, Message>();
   async send(message: Message, key: string) {
     this.messages.set(key, structuredClone(message));
@@ -38,13 +42,15 @@ export class MockMailProvider implements MailProvider {
 }
 export class ResendProvider implements MailProvider {
   readonly mode = "resend" as const;
+  readonly deliveryScope: string;
   constructor(
-    private key: string,
-    private from: string,
+    private readonly key: string,
+    private readonly from: string,
     private transport: typeof fetch = fetch,
   ) {
     z.string().min(1).parse(key);
     z.email().parse(from);
+    this.deliveryScope = sha256(JSON.stringify(["resend-v1", from, key]));
   }
   private async request(path: string, init: RequestInit = {}) {
     let response: Response;

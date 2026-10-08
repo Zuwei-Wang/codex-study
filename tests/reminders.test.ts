@@ -575,3 +575,115 @@ test("provider delivery failure disables the account and fresh snapshots cannot 
     /Verified/,
   );
 });
+
+test("persisted retry configuration cannot change sender or provider credentials across restart", async (t) => {
+  const f = fixture(t),
+    directory = join(f.root, "bound-provider");
+  const calls: { body: string; key: string }[] = [];
+  let fail = true;
+  const transport: typeof fetch = async (_url, init) => {
+    calls.push({
+      body: String(init!.body),
+      key: (init!.headers as Record<string, string>)["Idempotency-Key"]!,
+    });
+    if (fail) throw new Error("Synthetic transport interruption");
+    return Response.json({ id: "synthetic-provider-acceptance" });
+  };
+  const provider = (key = "synthetic-key-a", from = "sender-a@example.test") =>
+    new ResendProvider(key, from, transport);
+  const service = new ReminderService(
+    directory,
+    provider(),
+    "https://reminders.example.test",
+    f.time,
+  );
+  f.track(service);
+  const user = service.provision();
+  service.requestRecipient(user.id, { email: "learner@example.test" });
+  await service.tick();
+  assert.equal(service.state(user.id).notifications[0]!.state, "retry");
+  service.close();
+  for (const changed of [
+    provider("synthetic-key-b"),
+    provider("synthetic-key-a", "sender-b@example.test"),
+  ]) {
+    assert.throws(() => {
+      const unexpected = new ReminderService(
+        directory,
+        changed,
+        "https://reminders.example.test",
+        f.time,
+      );
+      unexpected.close();
+    }, /provider configuration changed/i);
+  }
+  assert.equal(calls.length, 1);
+  fail = false;
+  f.advance(2);
+  const resumed = new ReminderService(
+    directory,
+    provider(),
+    "https://reminders.example.test",
+    f.time,
+  );
+  f.track(resumed);
+  await resumed.tick();
+  assert.deepEqual(calls[1], calls[0]);
+  assert.equal(resumed.state(user.id).notifications[0]!.state, "accepted");
+  assert.equal(
+    readFileSync(join(directory, "reminders.sqlite")).includes(
+      Buffer.from("synthetic-key-a"),
+    ),
+    false,
+  );
+});
+
+test("an older unbound mail ledger with prior attempts is preserved and refused rather than silently rebound", async (t) => {
+  const f = fixture(t),
+    directory = join(f.root, "legacy-ledger");
+  let calls = 0;
+  const provider = new ResendProvider(
+    "synthetic-legacy-key",
+    "sender@example.test",
+    async () => {
+      calls++;
+      throw new Error("Synthetic timeout");
+    },
+  );
+  const service = new ReminderService(
+    directory,
+    provider,
+    "https://reminders.example.test",
+    f.time,
+  );
+  f.track(service);
+  const user = service.provision();
+  service.requestRecipient(user.id, { email: "learner@example.test" });
+  await service.tick();
+  const prior = service.state(user.id);
+  service.close();
+  const file = join(directory, "reminders.sqlite");
+  const db = new DatabaseSync(file);
+  db.prepare("DELETE FROM metadata WHERE key='delivery_scope'").run();
+  db.close();
+  const before = readFileSync(file);
+  assert.throws(
+    () =>
+      new ReminderService(
+        directory,
+        provider,
+        "https://reminders.example.test",
+        f.time,
+      ),
+    /no configuration binding/,
+  );
+  assert.deepEqual(readFileSync(file), before);
+  assert.equal(calls, 1);
+  const check = new DatabaseSync(file);
+  const jobs = check
+    .prepare("SELECT data FROM jobs")
+    .all()
+    .map((r) => JSON.parse(String(r.data)));
+  assert.equal(jobs[0].state, prior.notifications[0]!.state);
+  check.close();
+});

@@ -139,6 +139,28 @@ export class ReminderService {
       this.db
         .prepare("INSERT OR IGNORE INTO metadata VALUES('provider',?)")
         .run(provider.mode);
+      const deliveryScope = z
+        .string()
+        .regex(/^[a-f0-9]{64}$/)
+        .parse(provider.deliveryScope);
+      const priorScope = this.db
+        .prepare("SELECT value FROM metadata WHERE key='delivery_scope'")
+        .get()?.value;
+      if (priorScope && priorScope !== deliveryScope)
+        throw new Error(
+          "Provider configuration changed; preserve the ledger and reconcile prior attempts before migrating credentials or sender",
+        );
+      if (
+        !priorScope &&
+        provider.mode === "resend" &&
+        this.jobs().some((job) => job.attempts > 0)
+      )
+        throw new Error(
+          "Existing provider attempts have no configuration binding; reconciliation is required before upgrading this ledger",
+        );
+      this.db
+        .prepare("INSERT OR IGNORE INTO metadata VALUES('delivery_scope',?)")
+        .run(deliveryScope);
     } catch (error) {
       this.db?.close();
       unlinkSync(this.lock);
