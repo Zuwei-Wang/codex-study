@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "courseId": "DEMO101",
+  "id": "reading-1",
+  "title": "Read the synthetic introduction",
+  "sourceId": "lecture-intro",
+  "deadlines": [
+    {
+      "id": "brief",
+      "kind": "official",
+      "value": { "precision": "date", "date": "2030-11-10" },
+      "evidence": "Synthetic brief, page 1"
+    },
+    {
+      "id": "portal",
+      "kind": "official",
+      "value": { "precision": "date", "date": "2030-11-11" },
+      "evidence": "Synthetic portal observation"
+    },
+    {
+      "id": "plan",
+      "kind": "personal",
+      "value": { "precision": "date", "date": "2030-11-08" },
+      "evidence": "Synthetic personal plan"
+    },
+    {
+      "id": "feedback",
+      "kind": "feedback",
+      "value": { "precision": "unknown" },
+      "evidence": "No confirmed feedback date in synthetic source"
+    }
+  ]
+}

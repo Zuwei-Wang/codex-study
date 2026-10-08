@@ -1,0 +1,32 @@
+{
+  "name": "codex-study",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first study records and material versioning for a future Codex integration",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=24.21.0 <25",
+    "npm": "11.12.1"
+  },
+  "packageManager": "npm@11.12.1",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test dist/tests/*.test.js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "audit:public": "node scripts/audit-public.mjs",
+    "check": "npm run format:check && npm run typecheck && npm test && npm run audit:public && npm audit --audit-level=high",
+    "study": "node dist/packages/cli/src/index.js",
+    "demo": "npm run build && node dist/examples/demo-workspace/demo.js"
+  },
+  "dependencies": {
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.1",
+    "prettier": "3.9.9",
+    "typescript": "5.9.3"
+  }
+}

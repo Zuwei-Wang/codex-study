@@ -1,0 +1,7 @@
+{
+  "entity": "task",
+  "courseId": "DEMO101",
+  "id": "reading-1",
+  "stage": "read",
+  "evidence": "Synthetic learner explicitly marked this reading complete"
+}

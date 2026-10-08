@@ -1,0 +1,13 @@
+[
+  { "command": "npm", "args": ["ci", "--ignore-scripts"] },
+  { "command": "npm", "args": ["run", "format:check"] },
+  { "command": "npm", "args": ["run", "typecheck"] },
+  { "command": "npm", "args": ["run", "build"] },
+  { "command": "node", "args": ["--test", "dist/tests/*.test.js"] },
+  { "command": "npm", "args": ["run", "audit:public"] },
+  { "command": "npm", "args": ["audit", "--audit-level=high"] },
+  {
+    "command": "node",
+    "args": ["dist/examples/demo-workspace/demo.js", "tmp/ci-demo"]
+  }
+]
