@@ -11,16 +11,18 @@
 
 ## 当前状态
 
-**M1–M3 已实现，采用 MIT 许可证，仍为开发预览版。** 可以从源码构建并安装本地插件，尚未发布到插件目录或 npm，也没有托管服务。
+**M1–M3 已实现，采用 MIT 许可证，仍为开发预览版。** 可以从源码构建并安装本地插件，尚未发布到插件目录或 npm。当前开发版本另含 M4 提醒服务候选：本地预览、独立 HTTP 服务、合成邮件适配器和 Resend 接口；尚未部署，也未完成真实投递验收。
 
 | 已实现                                              | 计划中，尚未实现                      |
 | --------------------------------------------------- | ------------------------------------- |
-| 可配置工作区、中英文导航和 IANA 时区                | 托管提醒服务与真实投递验收            |
+| 可配置工作区、中英文导航和 IANA 时区                | 测试部署与真实提醒投递验收            |
 | SHA-256 归档、历史版本、任务证据与日期冲突          | 更多学校平台适配器                    |
 | 独立学习进度、SQLite 事务与完整性检查               | OCR、课件图像理解、PPTX/DOCX 内容读取 |
 | Markdown/TXT 分节读取、保留原页码的 PDF 文本读取    | 自动备份恢复与更多平台支持            |
 | 校验来源哈希、引用位置和原文的版本化笔记            | AI 教学质量的真实用户试用评估         |
-| 21 个 MCP 工具、八个 Skills、本地插件安装与升级验证 | 公开插件目录分发                      |
+| 22 个 MCP 工具、八个 Skills、本地插件安装与升级验证 | 公开插件目录分发                      |
+
+运行 `npm run reminders:demo` 可查看明确标注的合成提醒演示。详见[提醒数据契约](docs/REMINDERS.md)、[服务运行说明](services/reminders/README.md)和[中文试用指南](docs/PILOT.zh-CN.md)。
 
 M3 新增本地 ICS 导入、限定范围的 Blackboard Ultra/Minerva 观察候选，以及需要明确启用的每日检查进程。手动浏览器路径已做有限真实兼容性验证；无人值守运行仍需在用户配置的 CLI/浏览器环境中验收。详见[平台检查与调度](docs/PLATFORM_CHECKS.md)（英文）。
 
@@ -47,8 +49,8 @@ npm run demo -- "$HOME/codex-study-demo"
 安装依赖并选定受支持的 Node 版本后：
 
 ```sh
-npm run plugin:build -- build/marketplace-v0.3.0
-npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.3.0"
+npm run plugin:build -- build/marketplace-v0.4.0-dev.1
+npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.4.0-dev.1"
 npx --no-install codex plugin add codex-study@codex-study-local --json
 ```
 
@@ -112,9 +114,10 @@ node scripts/ci.mjs
 ```text
 packages/core/             记录、校验、SQLite、读取、笔记与导航
 packages/cli/              调用 core 的轻量命令行入口
-packages/mcp/              调用同一 core 的 21 个本地工具
+packages/mcp/              调用同一 core 的 22 个本地工具
 plugins/codex-study/       插件模板、启动脚本与八个学习 Skills
 packages/scheduler/        需要明确启用的本地每日检查进程
+services/reminders/        独立运行的可选提醒服务
 adapters/                  平台工作流支持边界
 examples/demo-workspace/   原创虚构资料与可运行演示
 tests/                     行为、CLI、MCP、恢复与一致性测试

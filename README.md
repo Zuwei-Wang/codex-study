@@ -11,16 +11,18 @@ Study through Codex conversations and eight focused Skills. A shared TypeScript 
 
 ## Status
 
-**M1–M3 are implemented as a developer preview under MIT.** Build and install the local plugin from source. It is not published to a plugin directory or npm, and has no hosted service.
+**M1–M3 are implemented as a developer preview under MIT.** Build and install the local plugin from source. The working version also contains the M4 reminder-service candidate: local preview, a separate HTTP service, a synthetic provider and a Resend adapter. It has not been deployed or qualified for real delivery. It is not published to a plugin directory or npm.
 
-| Available now                                                            | Planned, not implemented                                |
-| ------------------------------------------------------------------------ | ------------------------------------------------------- |
-| Configurable workspace, English/Chinese navigation and IANA time zones   | Hosted reminder service and real delivery qualification |
-| SHA-256 archives, retained versions, task evidence and date conflicts    | Additional school-platform adapters                     |
-| Explicit progress, SQLite transactions and integrity diagnostics         | OCR, visual slide interpretation and PPTX/DOCX readers  |
-| Markdown/TXT sections and PDF text with original page numbers            | Managed backups/restores and wider platform support     |
-| Versioned notes with validated source hashes, locations and quotes       | Pilot evaluation of AI teaching quality                 |
-| 21 MCP tools, eight Skills, local plugin installation and upgrade checks | Public plugin-directory distribution                    |
+| Available now                                                            | Planned, not implemented                               |
+| ------------------------------------------------------------------------ | ------------------------------------------------------ |
+| Configurable workspace, English/Chinese navigation and IANA time zones   | Deployment and real reminder delivery qualification    |
+| SHA-256 archives, retained versions, task evidence and date conflicts    | Additional school-platform adapters                    |
+| Explicit progress, SQLite transactions and integrity diagnostics         | OCR, visual slide interpretation and PPTX/DOCX readers |
+| Markdown/TXT sections and PDF text with original page numbers            | Managed backups/restores and wider platform support    |
+| Versioned notes with validated source hashes, locations and quotes       | Pilot evaluation of AI teaching quality                |
+| 22 MCP tools, eight Skills, local plugin installation and upgrade checks | Public plugin-directory distribution                   |
+
+Try `npm run reminders:demo` for a clearly synthetic reminder walkthrough. See the [minimal reminder contract](docs/REMINDERS.md), [service runbook](services/reminders/README.md) and [pilot guide](docs/PILOT.md).
 
 M3 adds local ICS import, scoped Blackboard Ultra/Minerva observation candidates and an opt-in daily check runner. The manual browser path has a limited live compatibility check; unattended operation still requires verification in the user's configured CLI/browser environment. See [platform checks and scheduling](docs/PLATFORM_CHECKS.md).
 
@@ -47,8 +49,8 @@ For a workspace created by M1/M2, run the explicit `upgrade` command below befor
 With dependencies installed and the supported Node runtime selected:
 
 ```sh
-npm run plugin:build -- build/marketplace-v0.3.0
-npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.3.0"
+npm run plugin:build -- build/marketplace-v0.4.0-dev.1
+npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.4.0-dev.1"
 npx --no-install codex plugin add codex-study@codex-study-local --json
 ```
 
@@ -112,9 +114,10 @@ Hosted CI targets Ubuntu and macOS. Local success is not GitHub required-check s
 ```text
 packages/core/             records, validation, SQLite, reading, notes, navigation
 packages/cli/              thin command-line caller of core
-packages/mcp/              21 local tools calling the same core
+packages/mcp/              22 local tools calling the same core
 plugins/codex-study/       plugin templates, launcher and eight learning Skills
 packages/scheduler/        opt-in local daily runner
+services/reminders/        separately operated optional reminder service
 adapters/                  supported platform workflow boundaries
 examples/demo-workspace/   original synthetic fixtures and runnable demo
 tests/                     behavioral, CLI, MCP, recovery and contract tests

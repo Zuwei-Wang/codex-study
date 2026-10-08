@@ -112,7 +112,7 @@ async function appSession() {
   };
   try {
     await request("initialize", {
-      clientInfo: { name: "codex-study-acceptance", version: "0.3.0" },
+      clientInfo: { name: "codex-study-acceptance", version: "0.4.0-dev.1" },
       capabilities: { experimentalApi: true },
     });
     processHandle.stdin.write(JSON.stringify({ method: "initialized" }) + "\n");
@@ -151,7 +151,7 @@ async function appSession() {
       server,
       `Codex did not discover study tools: ${JSON.stringify(servers)}`,
     );
-    assert.equal(Object.keys(server.tools).length, 21);
+    assert.equal(Object.keys(server.tools).length, 22);
     for (const name of [
       "study-setup",
       "study-update-materials",
@@ -306,6 +306,18 @@ try {
       manualScanId: applied.id,
     },
   });
+  const reminderPreview = await session.call("study_reminder_preview", {
+    workspace: workspacePath,
+    selection: {
+      streamId: "6c1b64e5-8771-46c4-9a7b-c7a8f4d71601",
+      revision: 1,
+      leadMinutes: 60,
+      selections: [],
+    },
+  });
+  assert.equal(reminderPreview.state, "prepared");
+  assert.equal(reminderPreview.uploaded, false);
+  assert.deepEqual(reminderPreview.projection.reminders, []);
   assert.equal(
     (await session.call("study_doctor", { workspace: workspacePath })).ok,
     true,
@@ -326,13 +338,13 @@ const configBefore = readFileSync(join(codexTestHome, "config.toml"), "utf8");
 for (const file of ["plugin.json", ".codex-plugin/plugin.json"]) {
   const path = join(marketplace, "plugins/codex-study", file);
   const value = JSON.parse(readFileSync(path, "utf8"));
-  value.version = "0.3.1-test";
+  value.version = "0.4.1-test";
   writeFileSync(path, JSON.stringify(value));
 }
 const upgrade = JSON.parse(
   run(["plugin", "add", "codex-study@codex-study-local", "--json"]),
 );
-assert.equal(upgrade.version, "0.3.1-test");
+assert.equal(upgrade.version, "0.4.1-test");
 assert.notEqual(upgrade.installedPath, install.installedPath);
 writeFileSync(join(root, "upgrade.json"), JSON.stringify(upgrade, null, 2));
 assert.equal(
@@ -363,10 +375,11 @@ const evidence = {
   assertions: [
     "relocated self-contained package",
     "real Codex plugin install",
-    "eight skills and twenty-one tools discovered",
+    "eight skills and twenty-two tools discovered",
     "real Codex MCP calls for setup/import/read/cited note/task/progress",
     "plugin refresh preserves records and local config",
     "ICS and scoped scan workflow through real Codex tools; schedule remains disabled",
+    "reminder preview stays local and uploads nothing",
   ],
   limits: [
     "No model turn or AI teaching quality evaluated; notes use original synthetic text.",

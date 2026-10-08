@@ -2,19 +2,19 @@
 
 This document defines the public/private split. Original project code and synthetic examples are licensed under the repository's MIT LICENSE. This document does not authorize deployments or releases.
 
-| Component                                                                  | Intended location                                                                        |
-| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Local core, CLI, MCP wrappers, Skills and generic templates                | Public-ready source repository after review                                              |
-| Platform workflow rules and parsers                                        | Public-ready source, with documented tested scope                                        |
-| Versioned reminder contract and synthetic mock                             | Public-ready source repository                                                           |
-| Hosted user accounts, mail service operations and deployment configuration | Separately maintained service                                                            |
-| Real slides, personal notes, coursework, school sessions and credentials   | User-controlled learning workspace or private credential storage outside this repository |
+| Component                                                                  | Intended location                                                                          |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Local core, CLI, MCP wrappers, Skills and generic templates                | Public-ready source repository after review                                                |
+| Platform workflow rules and parsers                                        | Public-ready source, with documented tested scope                                          |
+| Versioned reminder contract and synthetic mock                             | Public-ready source repository                                                             |
+| Hosted user accounts, mail service operations and deployment configuration | Separately operated private service data; generic implementation is reviewed public source |
+| Real slides, personal notes, coursework, school sessions and credentials   | User-controlled learning workspace or private credential storage outside this repository   |
 
 ## Importing existing code
 
 Copy only specifically reviewed source and synthetic tests. Parameterize user paths, institution-specific behavior, account settings and time zones. Preserve copyright notices, dependency licenses and attribution. Do not import an existing Git history by default.
 
-An ignore rule is only one safeguard; it does not remove previously tracked content. Inspect staged files and the complete release history before publishing. This scaffold has not undergone a production release audit.
+An ignore rule is only one safeguard; it does not remove previously tracked content. Inspect staged files and the complete release history before publishing. The source has public-content checks; real service deployment and pilot qualification are still pending.
 
 ## Demonstration data
 

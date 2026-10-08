@@ -66,9 +66,13 @@ Schedules require explicit opt-in and a successful manual scan of the same scope
 
 The build copies production dependency closure and compiled core/MCP code into an OS/architecture-specific package. The stdio launcher sets its installation root; tools reject learning workspaces inside it, including paths resolving there through existing symlinks. Portable and compatibility manifests share the same eight Skills and MCP launcher. A plugin-relative `cwd` keeps the installation relocatable. User configuration, credentials and learning workspaces are not part of the plugin package. Tests install/update the package through actual Codex CLI in fresh child configuration without copying user credentials.
 
+## Optional reminder candidate
+
+The local preview uses explicit selections and a minimal strict versioned projection. It makes no network request. A separate client performs an explicitly requested sync to a configured HTTPS service. Service code under `services/reminders` is excluded from plugin packaging; its private account registry, hashed bearer credentials, recipient verification and persistent SQLite outbox live in an independently operated directory. The service is single-process, bound to loopback for a TLS reverse proxy, and has a synthetic provider by default. Unknown outcomes are never inferred to be delivered. See [the contract](REMINDERS.md) and [runbook](../services/reminders/README.md). Real deployment/delivery qualification remains pending.
+
 ## Explicit limits
 
 - macOS/Linux local filesystems only. Network filesystems, Windows, hardware power-loss behavior and hostile concurrent filesystem modifications are not verified.
 - No automatic backups/restores, encryption, multi-user access control, automatic migrations or storage garbage collection yet. OS account permissions protect local files; users control full-workspace backups while tools are closed.
-- No PPTX/DOCX reading, OCR, diagram/layout interpretation, built-in browser driver, hosted reminders or production deployment. Calendar-to-course mapping is explicit; material-to-session mapping is not inferred.
+- No PPTX/DOCX reading, OCR, diagram/layout interpretation, built-in browser driver or qualified production deployment. The optional reminder-service candidate has synthetic tests only. Calendar-to-course mapping is explicit; material-to-session mapping is not inferred.
 - The CLI returns paths and record data to its caller. Real workspace exports and logs remain private and must not be attached to public issues.

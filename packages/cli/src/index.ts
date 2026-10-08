@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { parseArgs } from "node:util";
 import { readRegular } from "../../core/src/storage.js";
-import { Workspace } from "../../core/src/index.js";
+import { Workspace, previewReminders } from "../../core/src/index.js";
 
 const usage = `Codex Study — local study workflow
 
@@ -23,9 +23,10 @@ study schedule-configure --workspace PATH --input schedule.json
 study schedule-finish --workspace PATH --input run-result.json
 study read --workspace PATH --input reading.json
 study note --workspace PATH --input note.json
+study reminder-preview --workspace PATH --input selection.json
 
 All writes stay in PATH/.study. JSON inputs are validated; see examples/demo-workspace.
-Browser observations require an authorized client connection. Daily scheduling is opt-in; notifications are not implemented.
+Browser observations require an authorized client connection. Daily scheduling is opt-in; reminder preview is local; sending requires a separately configured service.
 `;
 
 async function main(): Promise<void> {
@@ -67,6 +68,7 @@ async function main(): Promise<void> {
     "schedule-finish": ["workspace", "input"],
     read: ["workspace", "input"],
     note: ["workspace", "input"],
+    "reminder-preview": ["workspace", "input"],
   };
   if (!allowed[command]) throw new Error(`Unknown command: ${command}`);
   for (const key of Object.keys(values))
@@ -149,6 +151,9 @@ async function main(): Promise<void> {
         break;
       case "read":
         result = await workspace.readMaterial(json("input"));
+        break;
+      case "reminder-preview":
+        result = previewReminders(workspace.snapshot(), json("input"));
         break;
       case "note":
         result = await workspace.saveNote(json("input"));

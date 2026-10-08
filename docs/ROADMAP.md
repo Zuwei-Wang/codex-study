@@ -1,6 +1,6 @@
 # Development roadmap
 
-Status: M1–M3 are implemented as developer previews. M4–M5 remain planned, except that MIT licensing, public-source review, documentation and standard CI have been brought forward. AI teaching quality and desktop UI behavior still require pilot evaluation.
+Status: M1–M3 are implemented as developer previews. M4 has an unqualified service candidate; M5 pilot results remain pending. MIT licensing, public-source review, documentation and standard CI have been brought forward. AI teaching quality and desktop UI behavior still require pilot evaluation.
 
 ## M1 — A working synthetic local workflow (implemented)
 
@@ -32,13 +32,15 @@ Acceptance evidence: the actual pinned Codex CLI installs a relocated package in
 
 Acceptance evidence: synthetic tests detect new/changed files and dates, prove unchanged results and preserve records on incomplete/failed checks. The real Codex client invokes ICS/scan tools; a limited authenticated Minerva check verified directory traversal, PDF preview and download bytes outside this repository. The opt-in foreground scheduler is tested with real child processes and synthetic observations. Actual unattended CLI/browser operation remains a per-installation qualification, not an established service. See [tested scope](PLATFORM_CHECKS.md).
 
-## M4 — Optional hosted reminders
+## M4 — Optional hosted reminders (implementation candidate; real qualification pending)
 
 - Publish a minimal, versioned sync contract and a synthetic preview/mock.
 - Implement the separately maintained hosted service with verified recipients, user isolation, configurable time zones, opt-out and cancellation.
 - Handle rescheduling, stale snapshots, retries and persistent notification deduplication.
 
 Acceptance: users cannot access each other's data; obsolete reminders are suppressed; local learning remains usable without this service; real delivery is verified separately from API acceptance.
+
+Implementation evidence: strict projection/preview, separate single-process HTTP/SQLite service, recipient verification, isolated accounts, opt-out, revision cancellation, stale suppression, bounded retries, persistent deduplication, a synthetic demo and an implemented Resend API adapter. These have synthetic tests; no real deployment or delivery is established. See [runbook](../services/reminders/README.md).
 
 ## M5 — Public release and pilot
 

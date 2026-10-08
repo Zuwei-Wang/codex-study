@@ -8,4 +8,6 @@ M2 tests also cover PDF/Markdown text extraction, invalid or unsupported documen
 
 M3 tests cover calendar recurrence/DST/cancellation and stale feeds, atomic scoped scans, opt-in daily claims, interruption/cancellation and real child-process execution with a synthetic adapter. The Codex acceptance test also exercises ICS, scans and a disabled schedule.
 
+M4 tests cover minimal projection, real loopback HTTP/client flows, account isolation, recipient verification/expiry, opt-out, zones, cancellation, stale revisions, restart persistence, stable retry bodies and keys, and provider response validation. `reminders:demo` is explicitly synthetic and part of the shared CI command contract.
+
 Model-generated teaching quality, desktop UI behavior, live teaching coverage, real unattended browser execution and delivery are not tested by CI. A limited manual browser compatibility check is documented separately. See [verification](../docs/VERIFICATION.md).

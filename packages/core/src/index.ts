@@ -6,3 +6,5 @@ export { renderNavigation } from "./navigation.js";
 export * from "./calendar.js";
 export * from "./observations.js";
 export * from "./scheduling.js";
+
+export * from "./reminders.js";

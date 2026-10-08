@@ -1,6 +1,6 @@
 {
   "name": "codex-study",
-  "version": "0.3.0",
+  "version": "0.4.0-dev.1",
   "private": true,
   "description": "Local-first Codex study plugin with versioned materials and cited learning notes",
   "license": "MIT",
@@ -17,12 +17,15 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "audit:public": "node scripts/audit-public.mjs",
-    "check": "npm run format:check && npm run typecheck && npm test && node scripts/verify-codex.mjs && npm run audit:public && npm audit --audit-level=high",
+    "check": "npm run format:check && npm run typecheck && npm test && node scripts/verify-codex.mjs && npm run audit:public && npm audit --audit-level=high && node dist/examples/demo-workspace/reminders.js",
     "study": "node dist/packages/cli/src/index.js",
     "demo": "npm run build && node dist/examples/demo-workspace/demo.js",
     "mcp": "node dist/packages/mcp/src/index.js",
     "plugin:build": "npm run build && node scripts/build-plugin.mjs",
-    "schedule": "node dist/packages/scheduler/src/index.js"
+    "schedule": "node dist/packages/scheduler/src/index.js",
+    "reminders": "node dist/services/reminders/src/index.js",
+    "reminder-client": "node dist/packages/cli/src/reminder-client.js",
+    "reminders:demo": "npm run build && node dist/examples/demo-workspace/reminders.js"
   },
   "dependencies": {
     "@js-temporal/polyfill": "0.5.1",

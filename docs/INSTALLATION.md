@@ -5,8 +5,8 @@
 Use Node 24.21.0/npm 11.12.1 on macOS or Linux and install locked dependencies as shown in the root README. The test client is the pinned `@openai/codex` CLI 0.144.4. Other Codex clients and the desktop plugin UI have not been acceptance-tested here.
 
 ```sh
-npm run plugin:build -- build/marketplace-v0.3.0
-npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.3.0"
+npm run plugin:build -- build/marketplace-v0.4.0-dev.1
+npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.4.0-dev.1"
 npx --no-install codex plugin add codex-study@codex-study-local --json
 ```
 
@@ -45,7 +45,7 @@ If Skills appear but tools do not, check the MCP startup error, Node version and
 
 The launcher reports an actionable error on unsupported Node or missing runtime files. `study_capabilities` reports readers and missing integrations; `study_doctor` inspects data integrity. No diagnostics repair/delete data automatically.
 
-For a client that accepts ordinary stdio MCP configuration, build the repository, then set the server command to an absolute supported Node executable and the argument to the absolute `dist/packages/mcp/src/index.js`. This exposes the same 21 tools; Skills still need the client to load them separately. Standard output is reserved for MCP. No TCP listener or authentication credential is required for the local process.
+For a client that accepts ordinary stdio MCP configuration, build the repository, then set the server command to an absolute supported Node executable and the argument to the absolute `dist/packages/mcp/src/index.js`. This exposes the same 22 tools; Skills still need the client to load them separately. Standard output is reserved for MCP. No TCP listener or authentication credential is required for the local process.
 
 ## Acceptance test
 

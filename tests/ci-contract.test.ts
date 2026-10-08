@@ -25,6 +25,7 @@ test("hosted and fallback verification share the complete command contract and p
       command: "node",
       args: ["dist/examples/demo-workspace/demo.js", "tmp/ci-demo"],
     },
+    { command: "node", args: ["dist/examples/demo-workspace/reminders.js"] },
   ]);
   for (const check of ["format:check", "typecheck", "test", "audit:public"])
     assert.ok(

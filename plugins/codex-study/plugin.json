@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "codex-study",
-  "version": "0.3.0",
+  "version": "0.4.0-dev.1",
   "description": "Local course records, versioned materials, cited study notes and learning workflows.",
   "author": {
     "name": "Codex Study contributors"
