@@ -82,8 +82,17 @@ test("CLI completes documented synthetic workflow and reports misuse with nonzer
   );
   assert.equal(
     (run("upgrade") as { workspaceSchema: number }).workspaceSchema,
-    2,
+    3,
   );
+  assert.equal(
+    (
+      run("calendar", ["--input", fixture("calendar.json")]) as {
+        feed: { status: string };
+      }
+    ).feed.status,
+    "complete",
+  );
+  run("scan-prepare", ["--input", fixture("scope.json")]);
   run("snapshot");
   run("task", [], 1);
   run("snapshot", ["--file", "unused.md"], 1);

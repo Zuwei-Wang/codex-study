@@ -6,4 +6,6 @@ Tests exercise record validation, two language/time-zone profiles, identity boun
 
 M2 tests also cover PDF/Markdown text extraction, invalid or unsupported documents, exact citation validation, note revisions and conflicting edits, explicit schema migration, and real MCP client calls. `scripts/verify-codex.mjs` installs a relocated package through pinned Codex CLI using fresh child configuration, invokes study tools, then verifies a plugin upgrade preserves records and settings.
 
-Model-generated teaching quality, desktop UI behavior, browser access, live teaching coverage, scheduling and delivery are not tested or claimed. See [verification](../docs/VERIFICATION.md).
+M3 tests cover calendar recurrence/DST/cancellation and stale feeds, atomic scoped scans, opt-in daily claims, interruption/cancellation and real child-process execution with a synthetic adapter. The Codex acceptance test also exercises ICS, scans and a disabled schedule.
+
+Model-generated teaching quality, desktop UI behavior, live teaching coverage, real unattended browser execution and delivery are not tested by CI. A limited manual browser compatibility check is documented separately. See [verification](../docs/VERIFICATION.md).

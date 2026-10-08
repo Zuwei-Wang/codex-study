@@ -3,7 +3,7 @@
 ## Scope and status
 
 - This repository contains the generic, local-first study workflow product. Read README.md and docs/ROADMAP.md before implementation.
-- M1/M2 core, CLI, local MCP, readers, cited notes and plugin packaging are implemented as developer previews. Do not report school integrations, scheduled jobs, notification services or AI teaching quality as verified.
+- M1–M3 core, CLI, local MCP, reading/notes, ICS imports, scoped browser candidates and opt-in scheduling are developer previews. Distinguish the limited live browser check from synthetic tests; do not claim actual unattended operation, hosted notifications or AI teaching quality without separate evidence.
 - Keep changes inside this project unless the user authorizes a specific external operation. Existing personal learning workspaces and deployed services are separate systems.
 
 ## Public-source boundary

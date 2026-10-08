@@ -1,6 +1,6 @@
 # Development roadmap
 
-Status: M1 and M2 are implemented as developer previews. M3–M5 remain planned, except that MIT licensing, public-source review, documentation and standard CI have been brought forward. AI teaching quality and desktop UI behavior still require pilot evaluation.
+Status: M1–M3 are implemented as developer previews. M4–M5 remain planned, except that MIT licensing, public-source review, documentation and standard CI have been brought forward. AI teaching quality and desktop UI behavior still require pilot evaluation.
 
 ## M1 — A working synthetic local workflow (implemented)
 
@@ -23,14 +23,14 @@ Acceptance: synthetic profiles with different paths and time zones work; a repea
 
 Acceptance evidence: the actual pinned Codex CLI installs a relocated package in a fresh configuration, discovers all six Skills, calls setup/import/read/note/task/progress tools, and refreshes to a newer synthetic version without changing records or configuration. Notes validate traceable references and label published-material coverage. This verifies client integration; no model turn or real learner trial has been evaluated.
 
-## M3 — Verified course-platform checks
+## M3 — Verified course-platform checks (implemented developer preview)
 
 - Start with manual files and supported ICS imports.
 - Implement and verify a Minerva/Blackboard Ultra browser workflow using the user's own authorized session.
 - Save observations as candidates; validate and apply complete snapshots through core operations.
 - Add opt-in daily scheduling after the manual workflow works.
 
-Acceptance: detect a new slide file, a changed same-name file, and a changed deadline; unchanged runs are quiet; expired login/MFA and partial coverage are explicit; failure does not erase prior evidence.
+Acceptance evidence: synthetic tests detect new/changed files and dates, prove unchanged results and preserve records on incomplete/failed checks. The real Codex client invokes ICS/scan tools; a limited authenticated Minerva check verified directory traversal, PDF preview and download bytes outside this repository. The opt-in foreground scheduler is tested with real child processes and synthetic observations. Actual unattended CLI/browser operation remains a per-installation qualification, not an established service. See [tested scope](PLATFORM_CHECKS.md).
 
 ## M4 — Optional hosted reminders
 
@@ -45,6 +45,6 @@ Acceptance: users cannot access each other's data; obsolete reminders are suppre
 - Choose a license and audit the complete release contents and imported code attribution.
 - Add documented standard CI, synthetic examples, installation instructions, contribution guidance and supported-platform limitations.
 - Record a demonstration using only original synthetic material.
-- Pilot with a small group and record actual results before expanding platform support.
+- Pilot with a small group and record actual results before expanding platform support. The owner will arrange 2–3 testers; actual results are still pending.
 
 Acceptance: another person can install the released version, run the documented demo without a school account, and distinguish implemented, experimental and planned functionality.

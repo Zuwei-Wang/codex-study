@@ -1,4 +1,4 @@
-# Architecture and M1/M2 decisions
+# Architecture and M1–M3 decisions
 
 ## Runtime and boundaries
 
@@ -8,14 +8,14 @@ The core uses TypeScript, Node.js's built-in `node:sqlite`, Zod runtime validati
 
 The existing scaffold and its evidence-preservation requirements were reviewed before implementation. No existing personal-project source, deployment configuration, databases or history was imported. Validation, hashing, comparisons and recovery were implemented afresh using standard runtime facilities, keeping the first public release reviewable. Dependency provenance is recorded in [PROVENANCE.md](PROVENANCE.md).
 
-## Database schema 2 and versioned records
+## Database schema 3 and versioned records
 
-The workspace has a SQLite application ID and schema version; unknown versions are refused. Configuration, courses, sources, task snapshots and exported records also carry `schemaVersion: 1`. M2 adds note tables with a transactional, explicit schema-1-to-2 migration. Normal opens refuse schema 1 until the caller requests `upgrade`/`study_upgrade`; configuration and existing records are not rewritten. Older M1 clients cannot read schema 2. Record/configuration schema versions remain 1; snapshots add an optional `notes` collection.
+The workspace has a SQLite application ID and schema version; unknown versions are refused. Configuration, courses, sources, task snapshots and exported records also carry `schemaVersion: 1`. M3 adds calendar, scan and scheduling tables to M2 notes with an explicit transactional schema-1/2-to-3 migration. Normal opens refuse schema 1/2 until the caller requests `upgrade`/`study_upgrade`; configuration and existing records are not rewritten. Older clients cannot read schema 3. Record/configuration schema versions remain 1; snapshots add optional notes, calendars, sessions, scans, schedules and scheduleRuns collections.
 
 | Record                  | Identity and semantics                                                                                                                            |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Workspace configuration | Language (`en` / `zh-CN`), IANA time zone, academic-year label; location is the CLI argument and can change when the whole closed workspace moves |
-| Course                  | Explicit ID and title, with `manual` as the only implemented adapter                                                                              |
+| Course                  | Explicit ID and title, with `manual` or `blackboard-ultra` observation workflows and an optional canonical course-page URL                        |
 | Source                  | `(courseId, id)` plus stable kind/format; reference text is provenance, not permission to execute anything                                        |
 | Material version        | `(courseId, sourceId, sha256)`; per-source version number, original name, byte count, import instant and source evidence                          |
 | Task                    | `(courseId, id)`, stable source identity, title, typed deadline assertions                                                                        |
@@ -54,13 +54,21 @@ Notes separate material, explanation, practice and user reflections. Every mater
 
 Note revisions are hashes of normalized typed note JSON, with immutable rendered Markdown and its file hash. Source updates never retarget old citations. A new save requires null expected revision; an edit requires the current revision. Identical content is idempotent. Files become durable before a transaction updates the note head, old revisions remain accessible, and user-edited generated files cause a refusal. `doctor` also checks all historical note file hashes and lists unreferenced note residues. Reading and saving notes never change progress.
 
+## Timetables, observations and scheduling
+
+ICS bytes are immutable archives. Parsing happens in a bounded worker using ical.js; Temporal resolves explicit IANA wall times. Feed history retains every attempt, last verified snapshot and cancellation tombstones, including cancellation received before the event. Older or same-sequence active revisions cannot resurrect a cancellation. UID plus original recurrence time defines occurrence identity; missing occurrences remain uncertain. No remote subscription is fetched. See [format limits](PLATFORM_CHECKS.md).
+
+A scan captures its declared courses/surfaces and a baseline of authoritative metadata. Observation candidates carry scope, timestamps, reasons, file hashes and task evidence. Apply requires the reviewed revision and unchanged baseline; nested SQLite savepoints make complete file/task application atomic. Partial/failed scopes preserve authoritative records and verification times. Recoverable file residues can outlive a rolled-back transaction.
+
+Schedules require explicit opt-in and a successful manual scan of the same scope. Daily wall time is resolved in the selected IANA zone; persistent local-date claims prevent duplicate runs. The foreground runner invokes configured Codex as a child process and only accepts a matching applied scan. Disabling/reconfiguring a schedule blocks its linked candidate. This does not install an OS service or establish unattended browser availability.
+
 ## Plugin lifecycle
 
-The build copies production dependency closure and compiled core/MCP code into an OS/architecture-specific package. The stdio launcher sets its installation root; tools reject learning workspaces inside it, including paths resolving there through existing symlinks. Portable and compatibility manifests share the same six Skills and MCP launcher. A plugin-relative `cwd` keeps the installation relocatable. User configuration, credentials and learning workspaces are not part of the plugin package. Tests install/update the package through actual Codex CLI in fresh child configuration without copying user credentials.
+The build copies production dependency closure and compiled core/MCP code into an OS/architecture-specific package. The stdio launcher sets its installation root; tools reject learning workspaces inside it, including paths resolving there through existing symlinks. Portable and compatibility manifests share the same eight Skills and MCP launcher. A plugin-relative `cwd` keeps the installation relocatable. User configuration, credentials and learning workspaces are not part of the plugin package. Tests install/update the package through actual Codex CLI in fresh child configuration without copying user credentials.
 
 ## Explicit limits
 
 - macOS/Linux local filesystems only. Network filesystems, Windows, hardware power-loss behavior and hostile concurrent filesystem modifications are not verified.
 - No automatic backups/restores, encryption, multi-user access control, automatic migrations or storage garbage collection yet. OS account permissions protect local files; users control full-workspace backups while tools are closed.
-- No PPTX/DOCX reading, OCR, diagram/layout interpretation, class-session model, ICS adapter, browser access, schedulers, notifications or production deployment.
+- No PPTX/DOCX reading, OCR, diagram/layout interpretation, built-in browser driver, hosted reminders or production deployment. Calendar-to-course mapping is explicit; material-to-session mapping is not inferred.
 - The CLI returns paths and record data to its caller. Real workspace exports and logs remain private and must not be attached to public issues.

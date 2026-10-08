@@ -7,22 +7,24 @@ English | [简体中文](README.zh-CN.md)
 
 **A local-first Codex study plugin: versioned materials, cited notes and explicit learning progress.**
 
-Study through Codex conversations and six focused Skills. A shared TypeScript core, CLI and local MCP server keep course records, original files, evidence and progress in a workspace you choose. There is no separate graphical app; generated Markdown navigation and notes are readable outside Codex too.
+Study through Codex conversations and eight focused Skills. A shared TypeScript core, CLI and local MCP server keep course records, original files, evidence and progress in a workspace you choose. There is no separate graphical app; generated Markdown navigation and notes are readable outside Codex too.
 
 ## Status
 
-**M1 and M2 are implemented as a developer preview under MIT.** Build and install the local plugin from source. It is not published to a plugin directory or npm, and has no hosted service.
+**M1–M3 are implemented as a developer preview under MIT.** Build and install the local plugin from source. It is not published to a plugin directory or npm, and has no hosted service.
 
-| Available now                                                          | Planned, not implemented                               |
-| ---------------------------------------------------------------------- | ------------------------------------------------------ |
-| Configurable workspace, English/Chinese navigation and IANA time zones | School-platform checks and ICS import                  |
-| SHA-256 archives, retained versions, task evidence and date conflicts  | Scheduled checks and hosted reminders                  |
-| Explicit progress, SQLite transactions and integrity diagnostics       | OCR, visual slide interpretation and PPTX/DOCX readers |
-| Markdown/TXT sections and PDF text with original page numbers          | Managed backups/restores and wider platform support    |
-| Versioned notes with validated source hashes, locations and quotes     | Pilot evaluation of AI teaching quality                |
-| 14 MCP tools, six Skills, local plugin installation and upgrade checks | Public plugin-directory distribution                   |
+| Available now                                                            | Planned, not implemented                                |
+| ------------------------------------------------------------------------ | ------------------------------------------------------- |
+| Configurable workspace, English/Chinese navigation and IANA time zones   | Hosted reminder service and real delivery qualification |
+| SHA-256 archives, retained versions, task evidence and date conflicts    | Additional school-platform adapters                     |
+| Explicit progress, SQLite transactions and integrity diagnostics         | OCR, visual slide interpretation and PPTX/DOCX readers  |
+| Markdown/TXT sections and PDF text with original page numbers            | Managed backups/restores and wider platform support     |
+| Versioned notes with validated source hashes, locations and quotes       | Pilot evaluation of AI teaching quality                 |
+| 21 MCP tools, eight Skills, local plugin installation and upgrade checks | Public plugin-directory distribution                    |
 
-The core and CLI do not call AI models. When Codex uses the reader, selected material text enters that Codex session; local storage does not mean offline AI inference. No school account is needed for the synthetic demo.
+M3 adds local ICS import, scoped Blackboard Ultra/Minerva observation candidates and an opt-in daily check runner. The manual browser path has a limited live compatibility check; unattended operation still requires verification in the user's configured CLI/browser environment. See [platform checks and scheduling](docs/PLATFORM_CHECKS.md).
+
+The core and record CLI do not call AI models; the optional daily runner invokes the user's configured Codex CLI. When Codex uses the reader, selected material text enters that Codex session; local storage does not mean offline AI inference. No school account is needed for the synthetic demo.
 
 ## Try the synthetic demo
 
@@ -38,15 +40,15 @@ npm run demo -- "$HOME/codex-study-demo"
 
 The demo imports an original fictional Markdown deck twice, retains two changed versions, records explicit progress, preserves conflicting dates, reads one section and saves a cited note with a practice question. Output includes `versions: 2`, `officialDeadlineState: "conflict"`, `recordedProgress: ["read"]`, `citedNote`, `navigation` and `doctor.ok: true`. Repeating the demo does not duplicate versions, notes or progress. Verification timestamps reflect the actual import time.
 
-For a workspace created by M1, run the explicit `upgrade` command below before rerunning the demo.
+For a workspace created by M1/M2, run the explicit `upgrade` command below before rerunning the demo.
 
 ## Install the local Codex plugin
 
 With dependencies installed and the supported Node runtime selected:
 
 ```sh
-npm run plugin:build -- build/marketplace-v0.2.0
-npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.2.0"
+npm run plugin:build -- build/marketplace-v0.3.0
+npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.3.0"
 npx --no-install codex plugin add codex-study@codex-study-local --json
 ```
 
@@ -58,7 +60,7 @@ Ask Codex, for example:
 
 Then supply the absolute path to `examples/demo-workspace/fixtures/v1/intro.md`, ask to import it as `lecture-intro`, and use the slide-learning skill to explain section 2 and save cited notes. The model supplies typed tool inputs; you do not need to hand-edit JSON.
 
-Skills: setup, material updates, class preparation, slide learning, self-test and weekly review. Class preparation uses your confirmed session details; M2 has no automatic timetable or school-site checks. See [installation, upgrades and troubleshooting](docs/INSTALLATION.md) for the tested boundaries and manual MCP fallback.
+Skills: setup, material updates, class preparation, slide learning, self-test, weekly review, course checking and daily scheduling. Class preparation uses imported timetable evidence and explicit course mappings; file-to-session mappings are not guessed. See [installation, upgrades and troubleshooting](docs/INSTALLATION.md) for the tested boundaries and manual MCP fallback.
 
 ## Manual CLI workflow
 
@@ -76,13 +78,13 @@ npm run study -- doctor --workspace "$HOME/codex-study-demo"
 
 `snapshot` exports records; `read` reads an exact archived version; `note` saves a cited note with optimistic concurrency. `attempt` records caller-supplied partial/failed evidence and does not check a platform. See [input examples](examples/demo-workspace/README.md).
 
-To explicitly migrate a closed M1 workspace to database schema 2:
+To explicitly migrate a closed M1/M2 workspace to database schema 3:
 
 ```sh
 npm run study -- upgrade --workspace "$HOME/codex-study-demo"
 ```
 
-Migration adds note tables transactionally and preserves configuration, archives, records and progress. The old M1 client cannot read schema 2. There is no downgrade; keep a full workspace backup before migration. Installing/updating the plugin never migrates learning data automatically.
+Migration adds the missing note/calendar/scan/schedule tables transactionally and preserves configuration, archives, records and progress. The old M1/M2 client cannot read schema 3. There is no downgrade; keep a full workspace backup before migration. Installing/updating the plugin never migrates learning data automatically.
 
 ## How your data is handled
 
@@ -101,7 +103,7 @@ The repository contains only original synthetic fixtures, never real school reco
 node scripts/ci.mjs
 ```
 
-This shared local/hosted entry point runs locked installation, formatting, TypeScript checks, behavior tests, a real Codex CLI plugin install/MCP workflow/upgrade test, the public-source guard, dependency audit and the synthetic demo. Logs and commit/tool metadata stay in ignored `.cache/verification/`; Codex acceptance evidence stays in `.cache/codex-acceptance-*/`.
+This shared local/hosted entry point runs locked installation, formatting, TypeScript checks, behavior tests, calendar/scan/scheduler tests and a real Codex CLI plugin install/MCP workflow/upgrade test, the public-source guard, dependency audit and the synthetic demo. Logs and commit/tool metadata stay in ignored `.cache/verification/`; Codex acceptance evidence stays in `.cache/codex-acceptance-*/`.
 
 Hosted CI targets Ubuntu and macOS. Local success is not GitHub required-check success. The Codex test makes no model turn and does not evaluate teaching quality or the desktop UI. See [verification and hosted-CI fallback rules](docs/VERIFICATION.md).
 
@@ -110,9 +112,10 @@ Hosted CI targets Ubuntu and macOS. Local success is not GitHub required-check s
 ```text
 packages/core/             records, validation, SQLite, reading, notes, navigation
 packages/cli/              thin command-line caller of core
-packages/mcp/              14 local tools calling the same core
-plugins/codex-study/       plugin templates, launcher and six learning Skills
-adapters/                  planned platform and calendar adapters
+packages/mcp/              21 local tools calling the same core
+plugins/codex-study/       plugin templates, launcher and eight learning Skills
+packages/scheduler/        opt-in local daily runner
+adapters/                  supported platform workflow boundaries
 examples/demo-workspace/   original synthetic fixtures and runnable demo
 tests/                     behavioral, CLI, MCP, recovery and contract tests
 scripts/                   verification, plugin packaging and publication guard

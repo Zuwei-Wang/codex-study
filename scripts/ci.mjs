@@ -126,6 +126,8 @@ report.installedTools = Object.fromEntries(
     "@modelcontextprotocol/client",
     "pdfjs-dist",
     "@openai/codex",
+    "ical.js",
+    "@js-temporal/polyfill",
   ].map((name) => {
     try {
       return [

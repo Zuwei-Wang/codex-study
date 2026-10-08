@@ -27,7 +27,7 @@ test("real stdio MCP handshake, typed tools, reading, citations and errors work 
     await client.close();
   });
   const tools = await client.listTools();
-  assert.equal(tools.tools.length, 14);
+  assert.equal(tools.tools.length, 21);
   assert.equal(
     tools.tools.find((x) => x.name === "study_read_material")?.annotations
       ?.readOnlyHint,

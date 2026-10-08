@@ -1,5 +1,5 @@
-# Adapters
+# Adapters and platform workflows
 
-Planned platform and format-specific behavior. Begin with local file import and explicitly supported ICS formats, then verify a Minerva/Blackboard Ultra workflow using an authorized browser.
+M3 provides bounded local ICS parsing in core and a Blackboard Ultra/Minerva browser workflow through the `study-check-courses` Skill and typed observation candidates. Browser interaction requires the user's authorized client connection; no browser credentials or authenticated scraping client are bundled.
 
-Keep generic records and merge rules in core. Document tested platform behavior and limitations; do not claim broad platform support from a single school's successful run.
+Changes to files/tasks apply atomically only for complete declared scope. Missing/partial evidence preserves prior records. The automated tests use original synthetic data; live manual validation is limited to the navigation/preview/download path described in [platform checks](../docs/PLATFORM_CHECKS.md).

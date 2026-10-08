@@ -7,22 +7,24 @@
 
 **以本地存储为核心的 Codex 学习插件：资料版本管理、带引用笔记与明确记录的学习进度。**
 
-通过 Codex 对话和六个学习 Skills 使用。TypeScript 核心、CLI 与本地 MCP 服务共用同一套逻辑，将课程、原始文件、来源证据和进度保存在你指定的工作区。没有独立图形应用；生成的 Markdown 导航和笔记也可以在 Codex 之外阅读。
+通过 Codex 对话和八个学习 Skills 使用。TypeScript 核心、CLI 与本地 MCP 服务共用同一套逻辑，将课程、原始文件、来源证据和进度保存在你指定的工作区。没有独立图形应用；生成的 Markdown 导航和笔记也可以在 Codex 之外阅读。
 
 ## 当前状态
 
-**M1 和 M2 已实现，采用 MIT 许可证，仍为开发预览版。** 可以从源码构建并安装本地插件，尚未发布到插件目录或 npm，也没有托管服务。
+**M1–M3 已实现，采用 MIT 许可证，仍为开发预览版。** 可以从源码构建并安装本地插件，尚未发布到插件目录或 npm，也没有托管服务。
 
 | 已实现                                              | 计划中，尚未实现                      |
 | --------------------------------------------------- | ------------------------------------- |
-| 可配置工作区、中英文导航和 IANA 时区                | 学校平台检查与 ICS 课表导入           |
-| SHA-256 归档、历史版本、任务证据与日期冲突          | 定时检查与托管提醒                    |
+| 可配置工作区、中英文导航和 IANA 时区                | 托管提醒服务与真实投递验收            |
+| SHA-256 归档、历史版本、任务证据与日期冲突          | 更多学校平台适配器                    |
 | 独立学习进度、SQLite 事务与完整性检查               | OCR、课件图像理解、PPTX/DOCX 内容读取 |
 | Markdown/TXT 分节读取、保留原页码的 PDF 文本读取    | 自动备份恢复与更多平台支持            |
 | 校验来源哈希、引用位置和原文的版本化笔记            | AI 教学质量的真实用户试用评估         |
-| 14 个 MCP 工具、六个 Skills、本地插件安装与升级验证 | 公开插件目录分发                      |
+| 21 个 MCP 工具、八个 Skills、本地插件安装与升级验证 | 公开插件目录分发                      |
 
-核心与 CLI 不调用 AI 模型。Codex 调用读取工具时，选中的资料文本会进入当前 Codex 会话；本地存储不意味着 AI 推理离线。虚构课程演示不需要学校账号。
+M3 新增本地 ICS 导入、限定范围的 Blackboard Ultra/Minerva 观察候选，以及需要明确启用的每日检查进程。手动浏览器路径已做有限真实兼容性验证；无人值守运行仍需在用户配置的 CLI/浏览器环境中验收。详见[平台检查与调度](docs/PLATFORM_CHECKS.md)（英文）。
+
+核心与记录 CLI 不调用 AI 模型；可选每日检查进程会调用用户配置的 Codex CLI。Codex 调用读取工具时，选中的资料文本会进入当前 Codex 会话；本地存储不意味着 AI 推理离线。虚构课程演示不需要学校账号。
 
 ## 运行虚构课程演示
 
@@ -38,15 +40,15 @@ npm run demo -- "$HOME/codex-study-demo"
 
 演示会重复导入原创虚构 Markdown 课件，保留两个变化版本，记录明确的学习进度，保留冲突日期，读取其中一节，并保存含引用和自测题的笔记。输出包括 `versions: 2`、`officialDeadlineState: "conflict"`、`recordedProgress: ["read"]`、`citedNote`、`navigation` 和 `doctor.ok: true`。重复运行不会产生重复版本、笔记或进度。验证时间戳反映实际导入时间。
 
-如果工作区由 M1 创建，请先执行下文的显式 `upgrade` 命令，再运行演示。
+如果工作区由 M1/M2 创建，请先执行下文的显式 `upgrade` 命令，再运行演示。
 
 ## 安装本地 Codex 插件
 
 安装依赖并选定受支持的 Node 版本后：
 
 ```sh
-npm run plugin:build -- build/marketplace-v0.2.0
-npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.2.0"
+npm run plugin:build -- build/marketplace-v0.3.0
+npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.3.0"
 npx --no-install codex plugin add codex-study@codex-study-local --json
 ```
 
@@ -58,7 +60,7 @@ npx --no-install codex plugin add codex-study@codex-study-local --json
 
 随后提供 `examples/demo-workspace/fixtures/v1/intro.md` 的绝对路径，要求以 `lecture-intro` 为来源 ID 导入，再使用课件学习 Skill 讲解第 2 节并保存带引用笔记。模型填写工具参数，不需要你手工编辑 JSON。
 
-六个 Skills 分别负责初始化、更新资料、课前准备、课件学习、自测和每周复盘。课前准备依赖你确认的课程安排；M2 不会自动读取课表或检查学校网站。[安装、升级与故障排查](docs/INSTALLATION.md)（英文）说明了验证边界和手动 MCP 接入方法。
+八个 Skills 分别负责初始化、资料更新、课前准备、课件学习、自测、每周复盘、课程平台检查与每日调度。课前准备使用导入课表及明确的课程映射，不会猜测某份课件对应哪次课。[安装、升级与故障排查](docs/INSTALLATION.md)（英文）说明了验证边界和手动 MCP 接入方法。
 
 ## 手动 CLI 操作
 
@@ -76,13 +78,13 @@ npm run study -- doctor --workspace "$HOME/codex-study-demo"
 
 `snapshot` 导出记录；`read` 读取指定归档版本；`note` 校验引用并使用版本冲突检查保存笔记。`attempt` 只记录调用者提供的部分检查或失败证据，不执行平台检查。详见[输入示例](examples/demo-workspace/README.md)（英文）。
 
-关闭使用工作区的工具后，可明确升级 M1 数据库到 schema 2：
+关闭使用工作区的工具后，可明确升级 M1/M2 数据库到 schema 3：
 
 ```sh
 npm run study -- upgrade --workspace "$HOME/codex-study-demo"
 ```
 
-迁移通过事务新增笔记表，保留配置、归档、记录与进度。旧 M1 客户端不能读取 schema 2，暂不支持降级；迁移前请保留完整工作区备份。安装或更新插件不会自动迁移学习数据。
+迁移通过事务新增缺失的笔记、课表、检查与调度表，保留配置、归档、记录与进度。旧 M1/M2 客户端不能读取 schema 3，暂不支持降级；迁移前请保留完整工作区备份。安装或更新插件不会自动迁移学习数据。
 
 ## 数据处理方式
 
@@ -110,9 +112,10 @@ node scripts/ci.mjs
 ```text
 packages/core/             记录、校验、SQLite、读取、笔记与导航
 packages/cli/              调用 core 的轻量命令行入口
-packages/mcp/              调用同一 core 的 14 个本地工具
-plugins/codex-study/       插件模板、启动脚本与六个学习 Skills
-adapters/                  计划中的平台与课表适配器
+packages/mcp/              调用同一 core 的 21 个本地工具
+plugins/codex-study/       插件模板、启动脚本与八个学习 Skills
+packages/scheduler/        需要明确启用的本地每日检查进程
+adapters/                  平台工作流支持边界
 examples/demo-workspace/   原创虚构资料与可运行演示
 tests/                     行为、CLI、MCP、恢复与一致性测试
 scripts/                   验证、插件构建与公开内容检查

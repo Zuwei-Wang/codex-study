@@ -21,7 +21,20 @@ export const courseSchema = z.strictObject({
   schemaVersion: z.literal(1),
   id: idSchema,
   title: text,
-  adapter: z.literal("manual"),
+  adapter: z.enum(["manual", "blackboard-ultra"]),
+  coursePage: z
+    .url()
+    .refine((value) => {
+      const url = new URL(value);
+      return (
+        url.protocol === "https:" &&
+        !url.username &&
+        !url.password &&
+        !url.search &&
+        !url.hash
+      );
+    }, "Use a canonical HTTPS course page without credentials or query tokens")
+    .optional(),
 });
 export const sourceSchema = z.strictObject({
   schemaVersion: z.literal(1),

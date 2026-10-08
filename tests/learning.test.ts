@@ -199,7 +199,7 @@ test("M1 migration is explicit and preserves settings, source bytes, task confli
   const before = workspace.snapshot();
   const db = new DatabaseSync(join(path, ".study/records.sqlite"));
   db.exec(
-    "DROP TABLE note_heads; DROP TABLE note_revisions; PRAGMA user_version=1;",
+    "DROP TABLE schedule_runs; DROP TABLE schedules; DROP TABLE calendar_sessions; DROP TABLE calendar_imports; DROP TABLE calendar_feeds; DROP TABLE scan_runs; DROP TABLE note_heads; DROP TABLE note_revisions; PRAGMA user_version=1;",
   );
   db.close();
   assert.throws(() => new Workspace(path), /explicit upgrade/);
@@ -228,4 +228,28 @@ test("concurrent different note edits preserve one winner and refuse the stale r
   assert.match(String(failure?.reason), /revision conflict/);
   assert.equal(workspace.noteHistory(note.courseId, note.id).length, 2);
   assert.equal(workspace.doctor().ok, true);
+});
+
+test("M2 migration retains exact note revisions and archived bytes", async (t) => {
+  const { workspace, path, file } = setup(t);
+  const { hash } = workspace.importMaterial({ source, file });
+  const note = await workspace.saveNote({
+    note: sampleNote(hash),
+    expectedRevision: null,
+  });
+  const before = workspace.snapshot();
+  const noteBytes = readFileSync(note.path);
+  workspace.close();
+  const db = new DatabaseSync(join(path, ".study", "records.sqlite"));
+  db.exec(
+    "DROP TABLE calendar_sessions; DROP TABLE calendar_imports; DROP TABLE calendar_feeds; DROP TABLE scan_runs; DROP TABLE schedule_runs; DROP TABLE schedules; PRAGMA user_version=2;",
+  );
+  db.close();
+  assert.throws(() => new Workspace(path), /explicit upgrade/);
+  const upgraded = new Workspace(path, { migrate: true });
+  t.after(() => upgraded.close());
+  assert.deepEqual(upgraded.snapshot().notes, before.notes);
+  assert.deepEqual(upgraded.snapshot().materials, before.materials);
+  assert.deepEqual(readFileSync(note.path), noteBytes);
+  assert.equal(upgraded.doctor().ok, true);
 });

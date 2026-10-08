@@ -1,8 +1,10 @@
 {
   "name": "codex-study",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Local course records, versioned materials, cited study notes and learning workflows.",
-  "author": { "name": "Codex Study contributors" },
+  "author": {
+    "name": "Codex Study contributors"
+  },
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
@@ -13,6 +15,8 @@
     "capabilities": ["Read", "Write"]
   },
   "extensions": {
-    "com.openai": { "onboardingSkill": "./skills/study-setup/SKILL.md" }
+    "com.openai": {
+      "onboardingSkill": "./skills/study-setup/SKILL.md"
+    }
   }
 }

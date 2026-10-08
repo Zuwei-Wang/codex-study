@@ -1,0 +1,5 @@
+{
+  "adapter": "manual",
+  "courseIds": ["DEMO101"],
+  "surfaces": ["content"]
+}

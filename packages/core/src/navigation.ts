@@ -29,8 +29,8 @@ export function renderNavigation(snapshot: Snapshot): string {
     `${escape(snapshot.config.academicYear)} · ${escape(snapshot.config.timeZone)}`,
     "",
     label(
-      "Generated snapshot. Original files are archived without parsing. Verification describes local imports only. Progress is explicitly recorded, never inferred.",
-      "生成的快照。原始文件仅归档，未解析内容；验证状态仅描述本地导入。学习进度均为明确记录，不作推断。",
+      "Generated snapshot. Original files are archived without parsing. Verification distinguishes imported bytes, scoped observations and calendar refreshes. Progress is explicitly recorded, never inferred.",
+      "生成的快照。原始文件仅归档，未解析内容；验证状态区分导入字节、限定范围的观察和课表刷新。学习进度均为明确记录，不作推断。",
     ),
     "",
   ];
@@ -87,6 +87,13 @@ export function renderNavigation(snapshot: Snapshot): string {
         `  - ${label("Recorded progress", "已记录进度")}: ${progress.map((p) => `${p.stage} (${p.at}; ${escape(p.evidence)})`).join(", ") || label("none", "无")}`,
       );
     }
+    lines.push("", `### ${label("Timetable", "课表")}`, "");
+    for (const session of (snapshot.sessions ?? []).filter(
+      (s) => s.courseId === course.id,
+    ))
+      lines.push(
+        `- ${escape(session.title)} · ${date(session.start)} → ${date(session.end)} · ${escape(session.location)} · **${session.status}**`,
+      );
     lines.push("", `### ${label("Notes", "笔记")}`, "");
     for (const record of (snapshot.notes ?? []).filter(
       (n) => n.note.courseId === course.id,
@@ -97,6 +104,21 @@ export function renderNavigation(snapshot: Snapshot): string {
     }
     lines.push("");
   }
+  lines.push(`## ${label("Calendar and check status", "课表与检查状态")}`, "");
+  for (const feed of snapshot.calendars ?? [])
+    lines.push(
+      `- ${escape(feed.title)} · **${feed.status}** · ${label("last verified", "上次验证")}: ${feed.lastVerifiedAt ?? label("never", "未验证")} · ${feed.issues.map(escape).join("; ")}`,
+    );
+  const unmapped = (snapshot.sessions ?? []).filter((s) => s.courseId === null);
+  if (unmapped.length)
+    lines.push(
+      `- ${label("Unmapped timetable entries", "未映射到课程的课表条目")}: ${unmapped.length}`,
+    );
+  for (const scan of (snapshot.scans ?? []).slice(-10))
+    lines.push(
+      `- ${escape(scan.id)} · ${scan.scope.courseIds.map(escape).join(", ")} · ${scan.state} / ${scan.result?.status ?? "pending"}`,
+    );
+  lines.push("");
   if (!snapshot.courses.length)
     lines.push(label("No courses recorded.", "尚未记录课程。"), "");
   return lines.join("\n");

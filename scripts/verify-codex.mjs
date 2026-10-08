@@ -112,7 +112,7 @@ async function appSession() {
   };
   try {
     await request("initialize", {
-      clientInfo: { name: "codex-study-acceptance", version: "0.2.0" },
+      clientInfo: { name: "codex-study-acceptance", version: "0.3.0" },
       capabilities: { experimentalApi: true },
     });
     processHandle.stdin.write(JSON.stringify({ method: "initialized" }) + "\n");
@@ -151,7 +151,7 @@ async function appSession() {
       server,
       `Codex did not discover study tools: ${JSON.stringify(servers)}`,
     );
-    assert.equal(Object.keys(server.tools).length, 14);
+    assert.equal(Object.keys(server.tools).length, 21);
     for (const name of [
       "study-setup",
       "study-update-materials",
@@ -159,6 +159,8 @@ async function appSession() {
       "study-learn-slides",
       "study-self-test",
       "study-weekly-review",
+      "study-check-courses",
+      "study-schedule",
     ]) {
       assert.ok(
         JSON.stringify(skills).includes(`"name":"codex-study:${name}"`),
@@ -249,6 +251,61 @@ try {
     workspace: workspacePath,
     progress: json("progress.json"),
   });
+  const feed = json("calendar.json");
+  feed.file = resolve(feed.file);
+  assert.equal(
+    (
+      await session.call("study_calendar_import", {
+        workspace: workspacePath,
+        calendar: feed,
+      })
+    ).feed.status,
+    "complete",
+  );
+  const scope = json("scope.json");
+  const prepared = await session.call("study_scan_prepare", {
+    workspace: workspacePath,
+    scope,
+  });
+  const candidate = await session.call("study_scan_record", {
+    workspace: workspacePath,
+    candidate: {
+      id: prepared.id,
+      expectedRevision: prepared.revision,
+      files: [],
+      tasks: [],
+      observations: [
+        {
+          courseId: "DEMO101",
+          surface: "content",
+          status: "complete",
+          reason: "observed",
+          observedAt: new Date().toISOString(),
+          evidence:
+            "Original synthetic fixture fully inspected; no live platform check",
+        },
+      ],
+    },
+  });
+  const applied = await session.call("study_scan_apply", {
+    workspace: workspacePath,
+    id: candidate.id,
+    expectedRevision: candidate.revision,
+  });
+  assert.equal(applied.result.status, "complete");
+  await session.call("study_schedule_configure", {
+    workspace: workspacePath,
+    expectedRevision: null,
+    schedule: {
+      id: "synthetic-daily",
+      scope,
+      timeZone: "UTC",
+      localTime: "09:00",
+      enabled: false,
+      optIn: false,
+      manualScanId: applied.id,
+    },
+  });
   assert.equal(
     (await session.call("study_doctor", { workspace: workspacePath })).ok,
     true,
@@ -269,13 +326,13 @@ const configBefore = readFileSync(join(codexTestHome, "config.toml"), "utf8");
 for (const file of ["plugin.json", ".codex-plugin/plugin.json"]) {
   const path = join(marketplace, "plugins/codex-study", file);
   const value = JSON.parse(readFileSync(path, "utf8"));
-  value.version = "0.2.1-test";
+  value.version = "0.3.1-test";
   writeFileSync(path, JSON.stringify(value));
 }
 const upgrade = JSON.parse(
   run(["plugin", "add", "codex-study@codex-study-local", "--json"]),
 );
-assert.equal(upgrade.version, "0.2.1-test");
+assert.equal(upgrade.version, "0.3.1-test");
 assert.notEqual(upgrade.installedPath, install.installedPath);
 writeFileSync(join(root, "upgrade.json"), JSON.stringify(upgrade, null, 2));
 assert.equal(
@@ -306,13 +363,14 @@ const evidence = {
   assertions: [
     "relocated self-contained package",
     "real Codex plugin install",
-    "six skills and fourteen tools discovered",
+    "eight skills and twenty-one tools discovered",
     "real Codex MCP calls for setup/import/read/cited note/task/progress",
     "plugin refresh preserves records and local config",
+    "ICS and scoped scan workflow through real Codex tools; schedule remains disabled",
   ],
   limits: [
     "No model turn or AI teaching quality evaluated; notes use original synthetic text.",
-    "No production credentials, browser sessions, schedules or notification services used.",
+    "No production credentials, browser sessions, enabled schedules or notification services used.",
   ],
 };
 writeFileSync(join(root, "evidence.json"), JSON.stringify(evidence, null, 2));

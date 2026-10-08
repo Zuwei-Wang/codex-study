@@ -15,11 +15,17 @@ study snapshot --workspace PATH
 study nav --workspace PATH
 study doctor --workspace PATH
 study upgrade --workspace PATH
+study calendar --workspace PATH --input calendar.json
+study scan-prepare --workspace PATH --input scope.json
+study scan-record --workspace PATH --input observations.json
+study scan-apply --workspace PATH --input scan.json
+study schedule-configure --workspace PATH --input schedule.json
+study schedule-finish --workspace PATH --input run-result.json
 study read --workspace PATH --input reading.json
 study note --workspace PATH --input note.json
 
 All writes stay in PATH/.study. JSON inputs are validated; see examples/demo-workspace.
-School platforms, scheduling and notifications are not implemented.
+Browser observations require an authorized client connection. Daily scheduling is opt-in; notifications are not implemented.
 `;
 
 async function main(): Promise<void> {
@@ -53,6 +59,12 @@ async function main(): Promise<void> {
     nav: ["workspace"],
     doctor: ["workspace"],
     upgrade: ["workspace"],
+    calendar: ["workspace", "input"],
+    "scan-prepare": ["workspace", "input"],
+    "scan-record": ["workspace", "input"],
+    "scan-apply": ["workspace", "input"],
+    "schedule-configure": ["workspace", "input"],
+    "schedule-finish": ["workspace", "input"],
     read: ["workspace", "input"],
     note: ["workspace", "input"],
   };
@@ -79,7 +91,7 @@ async function main(): Promise<void> {
     let result: unknown;
     switch (command) {
       case "init":
-        result = { root: workspace.root, workspaceSchema: 2 };
+        result = { root: workspace.root, workspaceSchema: 3 };
         break;
       case "course":
         result = workspace.putCourse(json("input"));
@@ -108,7 +120,32 @@ async function main(): Promise<void> {
         result = workspace.snapshot();
         break;
       case "upgrade":
-        result = { workspaceSchema: 2, integrity: workspace.doctor() };
+        result = { workspaceSchema: 3, integrity: workspace.doctor() };
+        break;
+      case "calendar":
+        result = await workspace.importCalendar(json("input"));
+        if ((result as { feed: { status: string } }).feed.status !== "complete")
+          process.exitCode = 2;
+        break;
+      case "scan-prepare":
+        result = workspace.prepareScan(json("input"));
+        break;
+      case "scan-record":
+        result = workspace.recordScan(json("input"));
+        break;
+      case "scan-apply":
+        result = workspace.applyScan(json("input"));
+        if (
+          (result as { result: { status: string } }).result.status !==
+          "complete"
+        )
+          process.exitCode = 2;
+        break;
+      case "schedule-configure":
+        result = workspace.configureSchedule(json("input"));
+        break;
+      case "schedule-finish":
+        result = workspace.finishSchedule(json("input"));
         break;
       case "read":
         result = await workspace.readMaterial(json("input"));

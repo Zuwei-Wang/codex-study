@@ -1,6 +1,6 @@
 {
   "name": "codex-study",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Local-first Codex study plugin with versioned materials and cited learning notes",
   "license": "MIT",
@@ -21,10 +21,13 @@
     "study": "node dist/packages/cli/src/index.js",
     "demo": "npm run build && node dist/examples/demo-workspace/demo.js",
     "mcp": "node dist/packages/mcp/src/index.js",
-    "plugin:build": "npm run build && node scripts/build-plugin.mjs"
+    "plugin:build": "npm run build && node scripts/build-plugin.mjs",
+    "schedule": "node dist/packages/scheduler/src/index.js"
   },
   "dependencies": {
+    "@js-temporal/polyfill": "0.5.1",
     "@modelcontextprotocol/server": "2.3.1",
+    "ical.js": "2.2.1",
     "pdfjs-dist": "6.4.299",
     "zod": "4.6.5"
   },
