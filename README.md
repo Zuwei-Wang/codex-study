@@ -3,11 +3,13 @@
 [![CI](https://github.com/Zuwei-Wang/codex-study/actions/workflows/ci.yml/badge.svg)](https://github.com/Zuwei-Wang/codex-study/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+English | [简体中文](README.zh-CN.md)
+
 **Local-first study records, material versioning and evidence-aware task navigation.**
 
-面向 Codex 的本地学习工作流。先可靠保存课程、课件版本、任务来源和个人进度，再逐步接入课前准备、课件学习、自测与复习。
+A local study workflow for Codex. Start with reliable storage for courses, material versions, task sources and personal progress, then gradually add class preparation, slide-based learning, self-tests and review.
 
-## Status / 当前状态
+## Status
 
 **M1 is implemented as a local core and CLI.** This repository is an early developer preview under the MIT license, not an installable Codex plugin or a hosted application.
 
@@ -19,7 +21,7 @@
 | Explicit learning progress that survives imports                    | Scheduled checks and hosted reminders             |
 | SQLite transactions, crash recovery, integrity diagnostics          | Managed backups/restores and independent UI       |
 
-不需要学校账号即可运行演示。当前 CLI 不调用 AI、不访问学校网站、不发送通知；未来的 Codex 集成也不意味着 AI 推理完全离线。
+The demo runs without a school account. The current CLI does not call AI models, access school websites or send notifications. Future Codex integration does not imply fully offline AI inference.
 
 ## Try the synthetic demo
 
