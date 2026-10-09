@@ -11,16 +11,17 @@ Study through Codex conversations and eight focused Skills. A shared TypeScript 
 
 ## Status
 
-**M1–M3 are implemented as a developer preview under MIT.** Build and install the local plugin from source. The working version also contains the M4 reminder-service candidate: local preview, a separate HTTP service, a synthetic provider and a Resend adapter. An isolated HTTPS test deployment has passed synthetic smoke checks; real-recipient qualification is in progress. See the [deployment evidence](docs/M4_QUALIFICATION.md). It is not published to a plugin directory or npm.
+**M1–M4 are implemented as developer previews under MIT.** Build and install the local plugin from source. Optional reminders use a separately operated HTTP service with a synthetic provider and a Resend adapter. An isolated HTTPS deployment passed a live trial with one consenting recipient, including provider delivery, personal receipt, cancellation, opt-out and clean restart checks. Broader pilot and production qualification remain pending; see the [deployment evidence](docs/M4_QUALIFICATION.md). It is not published to a plugin directory or npm.
 
 | Available now                                                            | Planned, not implemented                               |
 | ------------------------------------------------------------------------ | ------------------------------------------------------ |
-| Configurable workspace, English/Chinese navigation and IANA time zones   | Real reminder delivery and recipient qualification     |
+| Configurable workspace, English/Chinese navigation and IANA time zones   | Broader pilot and production qualification             |
 | SHA-256 archives, retained versions, task evidence and date conflicts    | Additional school-platform adapters                    |
 | Explicit progress, SQLite transactions and integrity diagnostics         | OCR, visual slide interpretation and PPTX/DOCX readers |
 | Markdown/TXT sections and PDF text with original page numbers            | Managed backups/restores and wider platform support    |
 | Versioned notes with validated source hashes, locations and quotes       | Pilot evaluation of AI teaching quality                |
 | 22 MCP tools, eight Skills, local plugin installation and upgrade checks | Public plugin-directory distribution                   |
+| Optional reminders with one-recipient live qualification                 |                                                        |
 
 Try `npm run reminders:demo` for a clearly synthetic reminder walkthrough. See the [minimal reminder contract](docs/REMINDERS.md), [service runbook](services/reminders/README.md) and [pilot guide](docs/PILOT.md).
 

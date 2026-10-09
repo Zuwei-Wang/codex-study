@@ -6,7 +6,7 @@ The owner will arrange 2–3 participants. No participant has yet been recorded 
 
 ## Tested baseline
 
-Use public developer-preview commit **386d8babc6d55119aaac4bb998eb1a303cc348de** (M3, version 0.3.0). Its exact commit passed both [Ubuntu and macOS hosted CI](https://github.com/Zuwei-Wang/codex-study/actions/runs/37852125088). M4 remains a development candidate and is not required for the first pilot. If you choose a later revision, record that exact SHA and verify its hosted CI separately.
+Use public developer-preview commit **386d8babc6d55119aaac4bb998eb1a303cc348de** (M3, version 0.3.0). Its exact commit passed both [Ubuntu and macOS hosted CI](https://github.com/Zuwei-Wang/codex-study/actions/runs/37852125088). The later M4 reminder preview has passed a one-recipient live trial, but is not required for this local-workflow pilot. If you choose a later revision, record that exact SHA and verify its hosted CI separately.
 
 Required: macOS/Linux, Node 24.21.0, npm 11.12.1, and a Codex environment supporting the tested CLI/plugin version 0.144.4. The synthetic demo needs no school account or mail service. Codex model use may require the participant's normal account; the project does not supply one. Windows is not qualified.
 

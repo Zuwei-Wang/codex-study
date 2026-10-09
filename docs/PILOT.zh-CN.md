@@ -6,7 +6,7 @@
 
 ## 试用版本与准备
 
-第一轮固定使用 **386d8babc6d55119aaac4bb998eb1a303cc348de**（M3、0.3.0 开发预览版）。该提交的 [Ubuntu 与 macOS GitHub CI](https://github.com/Zuwei-Wang/codex-study/actions/runs/37852125088) 均已通过。M4 仍在开发验收，不影响先试用本地学习功能。若改用其他版本，请记录完整 SHA，并单独核对对应 CI。
+第一轮固定使用 **386d8babc6d55119aaac4bb998eb1a303cc348de**（M3、0.3.0 开发预览版）。该提交的 [Ubuntu 与 macOS GitHub CI](https://github.com/Zuwei-Wang/codex-study/actions/runs/37852125088) 均已通过。后续 M4 提醒预览版已完成单人真实邮件验收，但首轮本地学习功能试用不依赖它。若改用其他版本，请记录完整 SHA，并单独核对对应 CI。
 
 需要 macOS/Linux、Node 24.21.0、npm 11.12.1，以及支持本地插件的 Codex。已自动验收的 Codex CLI 是 0.144.4。虚构课程演示不需要学校账号或邮件服务；AI 对话使用试用者自己的正常 Codex 账号。Windows 暂未验收。
 

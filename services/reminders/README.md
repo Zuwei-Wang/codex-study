@@ -1,8 +1,8 @@
-# Optional reminder service (M4 development)
+# Optional reminder service (M4 developer preview)
 
 This is an independently operated, single-process Node/SQLite service. It is not installed or started with the Codex plugin. Operators maintain its account registry, private database, TLS endpoint and mail credentials separately from learning workspaces. The public source contains no deployed account, domain or credential.
 
-**Current qualification:** synthetic HTTP/provider/client tests pass locally and on an isolated HTTPS test deployment. Real-recipient qualification is in progress; see the [sanitized evidence](../../docs/M4_QUALIFICATION.md) and [Linux operations procedure](../../docs/DEPLOYMENT.md). The Resend adapter is implemented against its official API; local mock success is not actual provider acceptance or delivery.
+**Current qualification:** synthetic HTTP/provider/client tests pass locally and on an isolated HTTPS deployment. A separate live trial passed with one consenting recipient: mailbox verification, one Resend reminder accepted and independently confirmed delivered, personal receipt, cancellation/rescheduling, opt-out and clean restart persistence. Wider pilot and production qualification remain pending; see the [sanitized evidence](../../docs/M4_QUALIFICATION.md) and [Linux operations procedure](../../docs/DEPLOYMENT.md). Local mock success alone does not establish actual provider acceptance or delivery.
 
 ## Local synthetic run
 
@@ -56,4 +56,4 @@ Before operating real mail, choose a dedicated test host/domain and recipient, c
 
 The operator supplies `RESEND_API_KEY` with send and email-retrieval access, a verified sender address in `STUDY_REMINDER_FROM`, and `STUDY_REMINDER_LIVE=1`, then explicitly selects `--provider resend`. The service never reads school credentials. Do not paste keys into chat or commit an environment file. Sender/domain setup, provider limits and TLS are operator responsibilities; actual deployment configuration remains in private operator storage.
 
-Real acceptance requires: exact-commit hosted CI, verified recipient, one explicitly authorized synthetic reminder, provider acceptance ID, independently retrieved delivery result, recipient confirmation, opt-out, cancellation/rescheduling checks and recorded limitations. Store sensitive receipts in the operator's private environment, and only redacted status in public pilot records. The deployment portion has run; real-recipient acceptance is tracked in the qualification ledger.
+Real acceptance requires: exact-commit hosted CI, verified recipient, one explicitly authorized synthetic reminder, provider acceptance ID, independently retrieved delivery result, recipient confirmation, opt-out, cancellation/rescheduling checks and recorded limitations. Store sensitive receipts in the operator's private environment, and only redacted status in public pilot records. This gate has passed for one owner-authorized recipient; each new deployment and recipient still needs its applicable checks. See the qualification ledger for the tested scope.

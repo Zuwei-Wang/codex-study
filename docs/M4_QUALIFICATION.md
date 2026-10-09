@@ -21,7 +21,7 @@ This is a sanitized evidence summary. Actual addresses, hosts, account tokens, p
 - A clean process restart preserved the exact account/stream/notification state and send count. These are synthetic provider results; no real recipient received this synthetic test.
 - A dedicated real-provider key passed email-retrieval capability checks and the selected sender domain reported verified. Real and synthetic databases are separate.
 
-## Real-recipient gate
+## Real-recipient gate (passed for one recipient)
 
 A single owner-authorized Gmail recipient was used with original synthetic reminder content; no course data or other recipient was involved.
 
@@ -31,7 +31,7 @@ A single owner-authorized Gmail recipient was used with original synthetic remin
 - The real email's unsubscribe GET left opt-in unchanged. Its POST disabled the account and suppressed the remaining future reminder. A subsequent sync was rejected. The final queue had zero waiting reminders, three suppressed reminder jobs with zero attempts, and one delivered reminder with one attempt.
 - A stopped-ledger private backup was taken, then the real process restarted. The full externally visible state, opt-out and send count were unchanged. This is a clean restart and backup-creation check, not a restore or crash-recovery qualification.
 
-The actual reminder's personal receipt confirmation remains pending. Provider delivery is established; it does not yet establish that the person saw the reminder. No `personallyReceivedAt` has been assigned to that reminder.
+The owner explicitly confirmed receiving the identified test reminder in the conversation. That report was recorded through the authenticated receipt API at 2026-10-09 19:13:47 UTC as `personallyReceivedAt`; the provider state remains `delivered`. This completes M4's one-recipient live qualification. The test account remains opted out with no waiting reminders; independent M5 participant feedback is still pending.
 
 ## Remaining limits
 
