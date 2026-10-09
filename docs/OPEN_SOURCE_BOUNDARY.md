@@ -14,7 +14,7 @@ This document defines the public/private split. Original project code and synthe
 
 Copy only specifically reviewed source and synthetic tests. Parameterize user paths, institution-specific behavior, account settings and time zones. Preserve copyright notices, dependency licenses and attribution. Do not import an existing Git history by default.
 
-An ignore rule is only one safeguard; it does not remove previously tracked content. Inspect staged files and the complete release history before publishing. The source has public-content checks; real service deployment and pilot qualification are still pending.
+An ignore rule is only one safeguard; it does not remove previously tracked content. Inspect staged files and the complete release history before publishing. The source has public-content checks; real-recipient and pilot qualification are still pending; deployment evidence is summarized without private operator details.
 
 ## Demonstration data
 

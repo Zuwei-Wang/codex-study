@@ -2,7 +2,7 @@
 
 This is an independently operated, single-process Node/SQLite service. It is not installed or started with the Codex plugin. Operators maintain its account registry, private database, TLS endpoint and mail credentials separately from learning workspaces. The public source contains no deployed account, domain or credential.
 
-**Current qualification:** synthetic HTTP/provider/client tests pass locally. No deployed service or real email delivery has been qualified. The Resend adapter is implemented against its official API; local mock success is not actual provider acceptance or delivery.
+**Current qualification:** synthetic HTTP/provider/client tests pass locally and on an isolated HTTPS test deployment. Real-recipient qualification is in progress; see the [sanitized evidence](../../docs/M4_QUALIFICATION.md) and [Linux operations procedure](../../docs/DEPLOYMENT.md). The Resend adapter is implemented against its official API; local mock success is not actual provider acceptance or delivery.
 
 ## Local synthetic run
 
@@ -54,6 +54,6 @@ The lock file allows only one process per database. A crash can leave `service.l
 
 Before operating real mail, choose a dedicated test host/domain and recipient, configure TLS reverse proxying to `127.0.0.1:8788`, and place persistent private storage outside this checkout. Use separate databases for mock and real modes; the service refuses switching modes on an existing database. It is not suitable for ephemeral/serverless filesystems.
 
-The operator supplies `RESEND_API_KEY` with send and email-retrieval access, a verified sender address in `STUDY_REMINDER_FROM`, and `STUDY_REMINDER_LIVE=1`, then explicitly selects `--provider resend`. The service never reads school credentials. Do not paste keys into chat or commit an environment file. Sender/domain setup, provider limits and TLS are operator responsibilities; no infrastructure is deployed by these source changes.
+The operator supplies `RESEND_API_KEY` with send and email-retrieval access, a verified sender address in `STUDY_REMINDER_FROM`, and `STUDY_REMINDER_LIVE=1`, then explicitly selects `--provider resend`. The service never reads school credentials. Do not paste keys into chat or commit an environment file. Sender/domain setup, provider limits and TLS are operator responsibilities; actual deployment configuration remains in private operator storage.
 
-Real acceptance requires: exact-commit hosted CI, verified recipient, one explicitly authorized synthetic reminder, provider acceptance ID, independently retrieved delivery result, recipient confirmation, opt-out, cancellation/rescheduling checks and recorded limitations. Store sensitive receipts in the operator's private environment, and only redacted status in public pilot records. This gate has not yet run.
+Real acceptance requires: exact-commit hosted CI, verified recipient, one explicitly authorized synthetic reminder, provider acceptance ID, independently retrieved delivery result, recipient confirmation, opt-out, cancellation/rescheduling checks and recorded limitations. Store sensitive receipts in the operator's private environment, and only redacted status in public pilot records. The deployment portion has run; real-recipient acceptance is tracked in the qualification ledger.

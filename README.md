@@ -11,11 +11,11 @@ Study through Codex conversations and eight focused Skills. A shared TypeScript 
 
 ## Status
 
-**M1–M3 are implemented as a developer preview under MIT.** Build and install the local plugin from source. The working version also contains the M4 reminder-service candidate: local preview, a separate HTTP service, a synthetic provider and a Resend adapter. It has not been deployed or qualified for real delivery. It is not published to a plugin directory or npm.
+**M1–M3 are implemented as a developer preview under MIT.** Build and install the local plugin from source. The working version also contains the M4 reminder-service candidate: local preview, a separate HTTP service, a synthetic provider and a Resend adapter. An isolated HTTPS test deployment has passed synthetic smoke checks; real-recipient qualification is in progress. See the [deployment evidence](docs/M4_QUALIFICATION.md). It is not published to a plugin directory or npm.
 
 | Available now                                                            | Planned, not implemented                               |
 | ------------------------------------------------------------------------ | ------------------------------------------------------ |
-| Configurable workspace, English/Chinese navigation and IANA time zones   | Deployment and real reminder delivery qualification    |
+| Configurable workspace, English/Chinese navigation and IANA time zones   | Real reminder delivery and recipient qualification     |
 | SHA-256 archives, retained versions, task evidence and date conflicts    | Additional school-platform adapters                    |
 | Explicit progress, SQLite transactions and integrity diagnostics         | OCR, visual slide interpretation and PPTX/DOCX readers |
 | Markdown/TXT sections and PDF text with original page numbers            | Managed backups/restores and wider platform support    |

@@ -40,7 +40,7 @@ Acceptance evidence: synthetic tests detect new/changed files and dates, prove u
 
 Acceptance: users cannot access each other's data; obsolete reminders are suppressed; local learning remains usable without this service; real delivery is verified separately from API acceptance.
 
-Implementation evidence: strict projection/preview, separate single-process HTTP/SQLite service, recipient verification, isolated accounts, opt-out, revision cancellation, stale suppression, bounded retries, persistent deduplication, a synthetic demo and an implemented Resend API adapter. These have synthetic tests; no real deployment or delivery is established. See [runbook](../services/reminders/README.md).
+Implementation evidence: strict projection/preview, separate single-process HTTP/SQLite service, recipient verification, isolated accounts, opt-out, revision cancellation, stale suppression, bounded retries, persistent deduplication, a synthetic demo and an implemented Resend API adapter. An isolated HTTPS test deployment has also passed synthetic worker, isolation, cancellation, opt-out and restart checks. Real-recipient qualification remains in progress; see [deployment evidence](M4_QUALIFICATION.md). See [runbook](../services/reminders/README.md).
 
 ## M5 — Public release and pilot
 
