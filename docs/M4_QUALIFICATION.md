@@ -23,8 +23,16 @@ This is a sanitized evidence summary. Actual addresses, hosts, account tokens, p
 
 ## Real-recipient gate
 
-With the owner's authorization, the deployed service queued a verification email at 2026-10-09 18:48:58 UTC, received provider acceptance at 18:49:00 UTC, and retrieved a matching delivered result at 18:49:15 UTC. Exactly one send attempt was recorded. This qualifies the verification-email transport only; the recipient has not yet completed verification or confirmed personal receipt. Verification completion, the actual synthetic-content reminder, independently retrieved delivery result, personal receipt, final opt-out and real-mode cancellation/rescheduling remain pending. No real delivery qualification is claimed from the checks above.
+A single owner-authorized Gmail recipient was used with original synthetic reminder content; no course data or other recipient was involved.
+
+- The first verification email was accepted and delivered on 2026-10-09. The owner confirmed receiving it, but its 15-minute code had expired by the next session. A fresh code was requested normally, delivered, read from the authorized mailbox and successfully verified through the shipped HTTPS client. The account stayed disabled until the explicit test opt-in.
+- At 2026-10-09 19:09:27 UTC, the service synchronized one immediate test reminder and two future cancellation/rescheduling fixtures. Repeating identical revisions returned unchanged results. A newer revision suppressed the cancelled reminder and the old schedule without attempting either send. Older revisions and expired snapshots returned 409; a separate real-mode account could not see or acknowledge these records.
+- The one immediate reminder was accepted at 19:09:30 UTC and reported delivered at 19:09:45 UTC, with exactly one send attempt. A separate authenticated retrieval of that exact provider message matched its ID, recipient and test subject and reported `delivered`.
+- The real email's unsubscribe GET left opt-in unchanged. Its POST disabled the account and suppressed the remaining future reminder. A subsequent sync was rejected. The final queue had zero waiting reminders, three suppressed reminder jobs with zero attempts, and one delivered reminder with one attempt.
+- A stopped-ledger private backup was taken, then the real process restarted. The full externally visible state, opt-out and send count were unchanged. This is a clean restart and backup-creation check, not a restore or crash-recovery qualification.
+
+The actual reminder's personal receipt confirmation remains pending. Provider delivery is established; it does not yet establish that the person saw the reminder. No `personallyReceivedAt` has been assigned to that reminder.
 
 ## Remaining limits
 
-Small pilot only. No unattended school-browser qualification, load test, host reboot test, crash recovery exercise, automatic backup/restore qualification, credential migration or multi-instance deployment was established by this run. The owner still needs to arrange M5's 2–3 independent participants. Refer to the [operations procedure](DEPLOYMENT.md) and [milestone ledger](ACCEPTANCE.md).
+Small pilot only. No unattended school-browser qualification, load test, host reboot test, crash recovery exercise, automatic backup or restore qualification, credential migration or multi-instance deployment was established by this run. The owner still needs to arrange M5's 2–3 independent participants. Refer to the [operations procedure](DEPLOYMENT.md) and [milestone ledger](ACCEPTANCE.md).
