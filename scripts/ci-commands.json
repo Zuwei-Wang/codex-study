@@ -24,6 +24,10 @@
     "args": ["scripts/verify-codex.mjs"]
   },
   {
+    "command": "node",
+    "args": ["scripts/verify-codex.mjs", "--desktop"]
+  },
+  {
     "command": "npm",
     "args": ["run", "audit:public"]
   },

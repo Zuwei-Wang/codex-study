@@ -2,11 +2,11 @@
 
 ## Supported path
 
-Use Node 24.21.0/npm 11.12.1 on macOS or Linux and install locked dependencies as shown in the root README. The test client is the pinned `@openai/codex` CLI 0.144.4. Other Codex clients and the desktop plugin UI have not been acceptance-tested here.
+Use Node 24.21.0/npm 11.12.1 on macOS or Linux and install locked dependencies as shown in the root README. The CLI baseline is the pinned `@openai/codex` 0.144.4. For the desktop app, use the [desktop package and setup guide](DESKTOP.md) ([中文](DESKTOP.zh-CN.md)): it uses a compatibility manifest and an absolute Node command. Its shipped macOS backend has passed isolated acceptance; visible UI and conversation acceptance still require user confirmation.
 
 ```sh
-npm run plugin:build -- build/marketplace-v0.4.0-dev.1
-npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.4.0-dev.1"
+npm run plugin:build -- build/marketplace-v0.4.0-dev.2
+npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.4.0-dev.2"
 npx --no-install codex plugin add codex-study@codex-study-local --json
 ```
 

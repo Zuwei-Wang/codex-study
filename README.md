@@ -47,11 +47,13 @@ For a workspace created by M1/M2, run the explicit `upgrade` command below befor
 
 ## Install the local Codex plugin
 
+For the desktop app, follow the [desktop setup guide](docs/DESKTOP.md). `npm run plugin:build:desktop` creates a machine-local package using the compatibility manifest and an absolute Node command. The macOS desktop backend passed isolated integration checks; visible desktop UI and conversation acceptance remain pending. The commands below retain the portable CLI path.
+
 With dependencies installed and the supported Node runtime selected:
 
 ```sh
-npm run plugin:build -- build/marketplace-v0.4.0-dev.1
-npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.4.0-dev.1"
+npm run plugin:build -- build/marketplace-v0.4.0-dev.2
+npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.4.0-dev.2"
 npx --no-install codex plugin add codex-study@codex-study-local --json
 ```
 

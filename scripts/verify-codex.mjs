@@ -11,6 +11,18 @@ import {
 import { join, resolve, dirname } from "node:path";
 import { Workspace } from "../dist/packages/core/src/index.js";
 
+const args = process.argv.slice(2);
+const desktop = args[0] === "--desktop";
+if (
+  args.length > 0 &&
+  !(
+    desktop &&
+    (args.length === 1 || (args.length === 3 && args[1] === "--codex"))
+  )
+)
+  throw new Error(
+    "Usage: node scripts/verify-codex.mjs [--desktop [--codex executable]]",
+  );
 mkdirSync(".cache", { recursive: true });
 const root = mkdtempSync(resolve(".cache/codex-acceptance-"));
 const codexTestHome = join(root, "codex-config");
@@ -22,7 +34,7 @@ const env = {
   CODEX_HOME: codexTestHome,
 };
 // The child uses a dedicated Codex configuration directory. Parent config, credentials and skills are never copied.
-const codex = resolve("node_modules/.bin/codex");
+const codex = resolve(args[2] ?? "node_modules/.bin/codex");
 const run = (args) =>
   execFileSync(codex, args, {
     cwd: project,
@@ -32,15 +44,20 @@ const run = (args) =>
     stdio: ["ignore", "pipe", "pipe"],
   });
 const version = run(["--version"]).trim();
-assert.equal(version, "codex-cli 0.144.4");
+if (!args[2]) assert.equal(version, "codex-cli 0.144.4");
+else assert.match(version, /^codex-cli /);
 writeFileSync(
   join(codexTestHome, "config.toml"),
   'model_reasoning_effort = "low"\n',
 );
 const built = join(root, "built");
-execFileSync(process.execPath, ["scripts/build-plugin.mjs", built], {
-  encoding: "utf8",
-});
+execFileSync(
+  process.execPath,
+  ["scripts/build-plugin.mjs", ...(desktop ? ["--desktop"] : []), built],
+  {
+    encoding: "utf8",
+  },
+);
 const marketplace = join(root, "relocated-marketplace");
 renameSync(built, marketplace);
 run(["plugin", "marketplace", "add", marketplace]);
@@ -53,10 +70,16 @@ let sessionNumber = 0;
 async function appSession() {
   const sessionLogs = join(root, `session-${++sessionNumber}`);
   mkdirSync(sessionLogs);
-  const processHandle = spawn(codex, ["app-server", "--stdio"], {
-    cwd: project,
-    env,
-  });
+  // The npm CLI launcher itself needs Node. Start that launcher explicitly so
+  // the child/MCP PATH can omit Node without preventing Codex from starting.
+  const processHandle = spawn(
+    args[2] ? codex : process.execPath,
+    [...(!args[2] ? [codex] : []), "app-server", "--stdio"],
+    {
+      cwd: project,
+      env: desktop ? { ...env, PATH: "/usr/bin:/bin" } : env,
+    },
+  );
   const pending = new Map();
   let sequence = 0;
   let stderr = "";
@@ -112,10 +135,25 @@ async function appSession() {
   };
   try {
     await request("initialize", {
-      clientInfo: { name: "codex-study-acceptance", version: "0.4.0-dev.1" },
+      clientInfo: { name: "codex-study-acceptance", version: "0.4.0-dev.2" },
       capabilities: { experimentalApi: true },
     });
     processHandle.stdin.write(JSON.stringify({ method: "initialized" }) + "\n");
+    if (desktop) {
+      const pluginDetails = await request("plugin/read", {
+        marketplacePath: join(marketplace, ".agents/plugins/marketplace.json"),
+        pluginName: "codex-study",
+      });
+      writeFileSync(
+        join(sessionLogs, "plugin.json"),
+        JSON.stringify(pluginDetails, null, 2),
+      );
+      const inventory = await request("mcpServerStatus/list", {});
+      writeFileSync(
+        join(sessionLogs, "initial-servers.json"),
+        JSON.stringify(inventory, null, 2),
+      );
+    }
     const skills = await request("skills/list", {
       cwds: [project],
       forceReload: true,
@@ -335,7 +373,9 @@ writeFileSync(
 const configBefore = readFileSync(join(codexTestHome, "config.toml"), "utf8");
 
 // Replace the installed copy from a newer package, keeping workspace data outside its lifecycle.
-for (const file of ["plugin.json", ".codex-plugin/plugin.json"]) {
+for (const file of desktop
+  ? [".codex-plugin/plugin.json"]
+  : ["plugin.json", ".codex-plugin/plugin.json"]) {
   const path = join(marketplace, "plugins/codex-study", file);
   const value = JSON.parse(readFileSync(path, "utf8"));
   value.version = "0.4.1-test";
@@ -371,6 +411,8 @@ try {
 const evidence = {
   schemaVersion: 1,
   codex: version,
+  packageMode: desktop ? "desktop-local" : "portable",
+  clientExecutable: codex,
   passed: true,
   assertions: [
     "relocated self-contained package",
@@ -382,6 +424,7 @@ const evidence = {
     "reminder preview stays local and uploads nothing",
   ],
   limits: [
+    "This exercises the selected client's app-server, not the running desktop UI or its current chat.",
     "No model turn or AI teaching quality evaluated; notes use original synthetic text.",
     "No production credentials, browser sessions, enabled schedules or notification services used.",
   ],

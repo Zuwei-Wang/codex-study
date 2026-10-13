@@ -8,7 +8,9 @@ Use the exact Node/npm versions in `.node-version` and `.npm-version`. The autho
 node scripts/ci.mjs
 ```
 
-The commands install from the lockfile, run formatting/type checks, compile and run all tests, execute `node scripts/verify-codex.mjs` against pinned Codex CLI 0.144.4, scan publishable files, audit dependencies, and run both synthetic demos (local learning and optional reminders). The `tests/ci-contract.test.ts` check ties the workflow, pins and shared runner to this contract. Any required-command change must update this contract, documentation and consistency test together.
+The commands install from the lockfile, run formatting/type checks, compile and run all tests, execute `node scripts/verify-codex.mjs` and `node scripts/verify-codex.mjs --desktop` against pinned Codex CLI 0.144.4, scan publishable files, audit dependencies, and run both synthetic demos (local learning and optional reminders). Desktop-mode tests use the compatibility manifest and a PATH without Node; packaging regression tests also exercise paths containing spaces and refusal to overwrite existing output. The `tests/ci-contract.test.ts` check ties the workflow, pins and shared runner to this contract. Any required-command change must update this contract, documentation and consistency test together.
+
+For an additional local check of a desktop app's bundled backend, run `node scripts/verify-codex.mjs --desktop --codex /absolute/path/to/bundled/codex`. The explicit executable's version is recorded instead of asserting the CI pin. It still uses isolated child configuration without copying credentials and does not start a model turn. This optional run does not replace required CI or prove the running desktop UI works; see [desktop evidence and pending checks](DESKTOP.md).
 
 `.cache/verification/<timestamp>/evidence.json` records commit SHA, tree SHA, workspace state before/after, lockfile hash, Node/npm versions, OS/architecture, every command and exit code, full log paths and semantic limitations. Files are local and ignored. Hosted results are independently visible in the authenticated Actions run.
 

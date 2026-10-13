@@ -47,11 +47,13 @@ npm run demo -- "$HOME/codex-study-demo"
 
 ## 安装本地 Codex 插件
 
+桌面端请使用[中文桌面安装指南](docs/DESKTOP.zh-CN.md)。`npm run plugin:build:desktop` 生成使用兼容清单、绑定 Node 绝对路径的本机包。macOS 桌面端自带后端已通过隔离集成验证，桌面界面与真实对话仍待用户确认。下列命令保留原有 CLI 安装方式。
+
 安装依赖并选定受支持的 Node 版本后：
 
 ```sh
-npm run plugin:build -- build/marketplace-v0.4.0-dev.1
-npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.4.0-dev.1"
+npm run plugin:build -- build/marketplace-v0.4.0-dev.2
+npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.4.0-dev.2"
 npx --no-install codex plugin add codex-study@codex-study-local --json
 ```
 
