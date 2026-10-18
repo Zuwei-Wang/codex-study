@@ -21,4 +21,6 @@ M3 baseline: commit `386d8babc6d55119aaac4bb998eb1a303cc348de`, [hosted run](htt
 
 Sensitive pilot and delivery evidence belongs in private operator records. Publish only consented, sanitized summaries. Do not fill blank feedback with simulated participants or turn mock mail results into real delivery claims.
 
+The 0.5.0 preview adds optional learning preferences: typed local read/save operations, explicit schema-4 upgrade, partial answers, skip/clear states, revision protection and Skill guidance. Automated checks cover persistence and data boundaries; the actual onboarding conversation and teaching benefit remain subject to human evaluation. See [learning preferences](LEARNING_PREFERENCES.md).
+
 Desktop integration, 2026-10-13: the compatibility package with an absolute Node command passed isolated acceptance against macOS app 26.1007.30912's bundled backend 0.162.0-alpha.17.2. It discovered all eight Skills and 22 tools and completed the synthetic learning and upgrade workflow. This is backend evidence; visible UI, a real desktop conversation and independent M5 feedback remain pending. See the [desktop guide](DESKTOP.md).

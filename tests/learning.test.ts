@@ -199,7 +199,7 @@ test("M1 migration is explicit and preserves settings, source bytes, task confli
   const before = workspace.snapshot();
   const db = new DatabaseSync(join(path, ".study/records.sqlite"));
   db.exec(
-    "DROP TABLE schedule_runs; DROP TABLE schedules; DROP TABLE calendar_sessions; DROP TABLE calendar_imports; DROP TABLE calendar_feeds; DROP TABLE scan_runs; DROP TABLE note_heads; DROP TABLE note_revisions; PRAGMA user_version=1;",
+    "DROP TABLE learning_preferences; DROP TABLE schedule_runs; DROP TABLE schedules; DROP TABLE calendar_sessions; DROP TABLE calendar_imports; DROP TABLE calendar_feeds; DROP TABLE scan_runs; DROP TABLE note_heads; DROP TABLE note_revisions; PRAGMA user_version=1;",
   );
   db.close();
   assert.throws(() => new Workspace(path), /explicit upgrade/);
@@ -242,7 +242,7 @@ test("M2 migration retains exact note revisions and archived bytes", async (t) =
   workspace.close();
   const db = new DatabaseSync(join(path, ".study", "records.sqlite"));
   db.exec(
-    "DROP TABLE calendar_sessions; DROP TABLE calendar_imports; DROP TABLE calendar_feeds; DROP TABLE scan_runs; DROP TABLE schedule_runs; DROP TABLE schedules; PRAGMA user_version=2;",
+    "DROP TABLE learning_preferences; DROP TABLE calendar_sessions; DROP TABLE calendar_imports; DROP TABLE calendar_feeds; DROP TABLE scan_runs; DROP TABLE schedule_runs; DROP TABLE schedules; PRAGMA user_version=2;",
   );
   db.close();
   assert.throws(() => new Workspace(path), /explicit upgrade/);

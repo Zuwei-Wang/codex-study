@@ -60,6 +60,12 @@ import {
   type Reading,
 } from "./learning.js";
 import { extractMaterial } from "./reader.js";
+import {
+  preferencesSaveSchema,
+  preferencesRecordSchema,
+  preferenceGuidance,
+  type PreferencesRecord,
+} from "./preferences.js";
 
 const APP_ID = 1129534549;
 const schema = `
@@ -122,6 +128,10 @@ const workflowSchema = `
   CREATE TABLE schedule_runs (id TEXT PRIMARY KEY, schedule_id TEXT NOT NULL REFERENCES schedules(id), local_date TEXT NOT NULL, data TEXT NOT NULL, UNIQUE(schedule_id,local_date));
   PRAGMA user_version = 3;
 `;
+const preferencesSchema = `
+  CREATE TABLE learning_preferences (id INTEGER PRIMARY KEY CHECK(id=1), data TEXT NOT NULL);
+  PRAGMA user_version = 4;
+`;
 export type Checkpoint = "object-durable" | "before-commit" | "after-commit";
 export interface WorkspaceOptions {
   migrate?: boolean;
@@ -159,6 +169,7 @@ export interface ProgressRecord {
 export interface Snapshot {
   schemaVersion: 1;
   config: Config;
+  learningPreferences?: PreferencesRecord | null;
   courses: Course[];
   materials: Material[];
   tasks: Task[];
@@ -211,7 +222,7 @@ export class Workspace {
     const db = new DatabaseSync(join(staging, "records.sqlite"));
     try {
       db.exec("PRAGMA synchronous=FULL; BEGIN IMMEDIATE;");
-      db.exec(schema + learningSchema + workflowSchema);
+      db.exec(schema + learningSchema + workflowSchema + preferencesSchema);
       db.prepare("INSERT INTO config VALUES(1,?)").run(JSON.stringify(config));
       db.exec("COMMIT");
     } finally {
@@ -253,17 +264,18 @@ export class Workspace {
       const version = this.db.prepare("PRAGMA user_version").get() as Row;
       if (
         app.application_id !== APP_ID ||
-        ![1, 2, 3].includes(Number(version.user_version))
+        ![1, 2, 3, 4].includes(Number(version.user_version))
       )
         throw new Error("Unsupported workspace database or schema version");
-      if (Number(version.user_version) < 3) {
+      if (Number(version.user_version) < 4) {
         if (!options.migrate)
           throw new Error(
-            `Workspace schema ${version.user_version} requires an explicit upgrade before M3 use`,
+            `Workspace schema ${version.user_version} requires an explicit upgrade to schema 4`,
           );
         this.transaction(() => {
           if (version.user_version === 1) this.db.exec(learningSchema);
-          this.db.exec(workflowSchema);
+          if (Number(version.user_version) < 3) this.db.exec(workflowSchema);
+          this.db.exec(preferencesSchema);
         });
       }
       configSchema.parse(
@@ -280,6 +292,54 @@ export class Workspace {
   }
   close(): void {
     if (this.db.isOpen) this.db.close();
+  }
+
+  private preferencesRecord(): PreferencesRecord | null {
+    const row = this.db
+      .prepare("SELECT data FROM learning_preferences WHERE id=1")
+      .get();
+    return row
+      ? preferencesRecordSchema.parse(JSON.parse(String(row.data)))
+      : null;
+  }
+
+  learningPreferences() {
+    const record = this.preferencesRecord();
+    return { record, guidance: preferenceGuidance(record) };
+  }
+
+  saveLearningPreferences(input: unknown) {
+    const request = preferencesSaveSchema.parse(input);
+    return this.transaction(() => {
+      const current = this.preferencesRecord();
+      if (
+        current &&
+        JSON.stringify(current.preferences) ===
+          JSON.stringify(request.preferences)
+      )
+        return { changed: false, record: current };
+      if ((current?.revision ?? null) !== request.expectedRevision)
+        throw new Error(
+          "Learning preferences revision conflict; read current preferences before editing",
+        );
+      const record: PreferencesRecord = {
+        schemaVersion: 1,
+        revision: sha256(
+          JSON.stringify({
+            previous: current?.revision ?? null,
+            preferences: request.preferences,
+          }),
+        ),
+        updatedAt: this.now(),
+        preferences: request.preferences,
+      };
+      this.db
+        .prepare(
+          "INSERT INTO learning_preferences VALUES(1,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data",
+        )
+        .run(JSON.stringify(record));
+      return { changed: true, record };
+    });
   }
 
   async readMaterial(input: unknown): Promise<Reading> {
@@ -1276,6 +1336,7 @@ export class Workspace {
     try {
       const result: Snapshot = {
         schemaVersion: 1,
+        learningPreferences: this.preferencesRecord(),
         config: configSchema.parse(
           JSON.parse(
             String(this.db.prepare("SELECT data FROM config").get()?.data),

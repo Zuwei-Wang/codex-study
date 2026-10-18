@@ -135,7 +135,7 @@ async function appSession() {
   };
   try {
     await request("initialize", {
-      clientInfo: { name: "codex-study-acceptance", version: "0.4.0-dev.2" },
+      clientInfo: { name: "codex-study-acceptance", version: "0.5.0-dev.1" },
       capabilities: { experimentalApi: true },
     });
     processHandle.stdin.write(JSON.stringify({ method: "initialized" }) + "\n");
@@ -189,7 +189,7 @@ async function appSession() {
       server,
       `Codex did not discover study tools: ${JSON.stringify(servers)}`,
     );
-    assert.equal(Object.keys(server.tools).length, 22);
+    assert.equal(Object.keys(server.tools).length, 24);
     for (const name of [
       "study-setup",
       "study-update-materials",
@@ -234,6 +234,28 @@ try {
     workspace: workspacePath,
     config: json("config.json"),
   });
+  assert.equal(
+    (await session.call("study_preferences_get", { workspace: workspacePath }))
+      .record,
+    null,
+  );
+  const savedPreferences = await session.call("study_preferences_save", {
+    workspace: workspacePath,
+    expectedRevision: null,
+    preferences: {
+      status: "provided",
+      planningStyle: "deadline-driven",
+      learningMode: "mixed",
+      sessionMinutes: 25,
+      supportStyle: "small-steps",
+    },
+  });
+  assert.equal(savedPreferences.changed, true);
+  assert.equal(
+    (await session.call("study_preferences_get", { workspace: workspacePath }))
+      .guidance.planning,
+    "small-milestones",
+  );
   await session.call("study_course_put", {
     workspace: workspacePath,
     course: json("course.json"),
@@ -378,13 +400,13 @@ for (const file of desktop
   : ["plugin.json", ".codex-plugin/plugin.json"]) {
   const path = join(marketplace, "plugins/codex-study", file);
   const value = JSON.parse(readFileSync(path, "utf8"));
-  value.version = "0.4.1-test";
+  value.version = "0.5.1-test";
   writeFileSync(path, JSON.stringify(value));
 }
 const upgrade = JSON.parse(
   run(["plugin", "add", "codex-study@codex-study-local", "--json"]),
 );
-assert.equal(upgrade.version, "0.4.1-test");
+assert.equal(upgrade.version, "0.5.1-test");
 assert.notEqual(upgrade.installedPath, install.installedPath);
 writeFileSync(join(root, "upgrade.json"), JSON.stringify(upgrade, null, 2));
 assert.equal(
@@ -417,7 +439,8 @@ const evidence = {
   assertions: [
     "relocated self-contained package",
     "real Codex plugin install",
-    "eight skills and twenty-two tools discovered",
+    "eight skills and twenty-four tools discovered",
+    "optional user-provided learning preferences saved and retained across upgrade",
     "real Codex MCP calls for setup/import/read/cited note/task/progress",
     "plugin refresh preserves records and local config",
     "ICS and scoped scan workflow through real Codex tools; schedule remains disabled",

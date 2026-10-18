@@ -2,6 +2,8 @@
 
 Status: M1–M4 are implemented as developer previews. M4 has passed a limited live trial with one consenting recipient; M5 independent pilot results remain pending. MIT licensing, public-source review, documentation and standard CI have been brought forward. AI teaching quality and desktop UI behavior still require pilot evaluation.
 
+The 0.5.0 development preview adds optional learning-preference onboarding and local schema-4 storage, with suggestions used by preparation, teaching, self-test and review Skills. Questions can be skipped, partially answered, edited or cleared. This does not establish improved teaching outcomes; see [scope and upgrade requirements](LEARNING_PREFERENCES.md).
+
 ## M1 — A working synthetic local workflow (implemented)
 
 - Define versioned records for courses, sources, tasks and workspace configuration.

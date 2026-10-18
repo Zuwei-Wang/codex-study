@@ -20,7 +20,7 @@
 | 独立学习进度、SQLite 事务与完整性检查               | OCR、课件图像理解、PPTX/DOCX 内容读取 |
 | Markdown/TXT 分节读取、保留原页码的 PDF 文本读取    | 自动备份恢复与更多平台支持            |
 | 校验来源哈希、引用位置和原文的版本化笔记            | AI 教学质量的真实用户试用评估         |
-| 22 个 MCP 工具、八个 Skills、本地插件安装与升级验证 | 公开插件目录分发                      |
+| 24 个 MCP 工具、八个 Skills、本地插件安装与升级验证 | 公开插件目录分发                      |
 | 可选提醒服务，已完成单人真实邮件验收                |                                       |
 
 运行 `npm run reminders:demo` 可查看明确标注的合成提醒演示。详见[提醒数据契约](docs/REMINDERS.md)、[服务运行说明](services/reminders/README.md)和[中文试用指南](docs/PILOT.zh-CN.md)。
@@ -43,7 +43,7 @@ npm run demo -- "$HOME/codex-study-demo"
 
 演示会重复导入原创虚构 Markdown 课件，保留两个变化版本，记录明确的学习进度，保留冲突日期，读取其中一节，并保存含引用和自测题的笔记。输出包括 `versions: 2`、`officialDeadlineState: "conflict"`、`recordedProgress: ["read"]`、`citedNote`、`navigation` 和 `doctor.ok: true`。重复运行不会产生重复版本、笔记或进度。验证时间戳反映实际导入时间。
 
-如果工作区由 M1/M2 创建，请先执行下文的显式 `upgrade` 命令，再运行演示。
+如果工作区使用 schema 1–3，请先执行下文的显式 `upgrade` 命令，再运行演示。
 
 ## 安装本地 Codex 插件
 
@@ -52,8 +52,8 @@ npm run demo -- "$HOME/codex-study-demo"
 安装依赖并选定受支持的 Node 版本后：
 
 ```sh
-npm run plugin:build -- build/marketplace-v0.4.0-dev.2
-npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.4.0-dev.2"
+npm run plugin:build -- build/marketplace-v0.5.0-dev.1
+npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.5.0-dev.1"
 npx --no-install codex plugin add codex-study@codex-study-local --json
 ```
 
@@ -66,6 +66,8 @@ npx --no-install codex plugin add codex-study@codex-study-local --json
 随后提供 `examples/demo-workspace/fixtures/v1/intro.md` 的绝对路径，要求以 `lecture-intro` 为来源 ID 导入，再使用课件学习 Skill 讲解第 2 节并保存带引用笔记。模型填写工具参数，不需要你手工编辑 JSON。
 
 八个 Skills 分别负责初始化、资料更新、课前准备、课件学习、自测、每周复盘、课程平台检查与每日调度。课前准备使用导入课表及明确的课程映射，不会猜测某份课件对应哪次课。[安装、升级与故障排查](docs/INSTALLATION.md)（英文）说明了验证边界和手动 MCP 接入方法。
+
+首次设置还会提供可选的[学习偏好问答](docs/LEARNING_PREFERENCES.zh-CN.md)：学习节奏、自学或听课倾向、学习时长与希望得到的帮助。可以部分回答、跳过、修改或清除。偏好保存在本地，用于调整建议，不贴人格标签、不改官方日期、不自动开启提醒。已有工作区需要下文的显式 schema-4 升级，安装插件不会自动迁移数据。
 
 ## 手动 CLI 操作
 
@@ -83,13 +85,13 @@ npm run study -- doctor --workspace "$HOME/codex-study-demo"
 
 `snapshot` 导出记录；`read` 读取指定归档版本；`note` 校验引用并使用版本冲突检查保存笔记。`attempt` 只记录调用者提供的部分检查或失败证据，不执行平台检查。详见[输入示例](examples/demo-workspace/README.md)（英文）。
 
-关闭使用工作区的工具后，可明确升级 M1/M2 数据库到 schema 3：
+关闭使用工作区的工具后，可明确升级 schema 1–3 数据库到 schema 4：
 
 ```sh
 npm run study -- upgrade --workspace "$HOME/codex-study-demo"
 ```
 
-迁移通过事务新增缺失的笔记、课表、检查与调度表，保留配置、归档、记录与进度。旧 M1/M2 客户端不能读取 schema 3，暂不支持降级；迁移前请保留完整工作区备份。安装或更新插件不会自动迁移学习数据。
+迁移通过事务新增缺失的笔记、课表、检查、调度与偏好表，保留配置、归档、记录与进度。旧客户端不能读取 schema 4，暂不支持降级；迁移前请保留完整工作区备份。安装或更新插件不会自动迁移学习数据。
 
 ## 数据处理方式
 
@@ -117,7 +119,7 @@ node scripts/ci.mjs
 ```text
 packages/core/             记录、校验、SQLite、读取、笔记与导航
 packages/cli/              调用 core 的轻量命令行入口
-packages/mcp/              调用同一 core 的 22 个本地工具
+packages/mcp/              调用同一 core 的 24 个本地工具
 plugins/codex-study/       插件模板、启动脚本与八个学习 Skills
 packages/scheduler/        需要明确启用的本地每日检查进程
 services/reminders/        独立运行的可选提醒服务

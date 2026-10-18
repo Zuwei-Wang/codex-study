@@ -12,6 +12,8 @@ study task --workspace PATH --input task.json
 study progress --workspace PATH --input progress.json
 study attempt --workspace PATH --course COURSE_ID --source SOURCE_ID --input attempt.json
 study snapshot --workspace PATH
+study preferences --workspace PATH
+study preferences-save --workspace PATH --input preferences.json
 study nav --workspace PATH
 study doctor --workspace PATH
 study upgrade --workspace PATH
@@ -57,6 +59,8 @@ async function main(): Promise<void> {
     progress: ["workspace", "input"],
     attempt: ["workspace", "course", "source", "input"],
     snapshot: ["workspace"],
+    preferences: ["workspace"],
+    "preferences-save": ["workspace", "input"],
     nav: ["workspace"],
     doctor: ["workspace"],
     upgrade: ["workspace"],
@@ -93,7 +97,7 @@ async function main(): Promise<void> {
     let result: unknown;
     switch (command) {
       case "init":
-        result = { root: workspace.root, workspaceSchema: 3 };
+        result = { root: workspace.root, workspaceSchema: 4 };
         break;
       case "course":
         result = workspace.putCourse(json("input"));
@@ -121,8 +125,14 @@ async function main(): Promise<void> {
       case "snapshot":
         result = workspace.snapshot();
         break;
+      case "preferences":
+        result = workspace.learningPreferences();
+        break;
+      case "preferences-save":
+        result = workspace.saveLearningPreferences(json("input"));
+        break;
       case "upgrade":
-        result = { workspaceSchema: 3, integrity: workspace.doctor() };
+        result = { workspaceSchema: 4, integrity: workspace.doctor() };
         break;
       case "calendar":
         result = await workspace.importCalendar(json("input"));

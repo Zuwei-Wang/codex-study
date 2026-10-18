@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { spawnSync } from "node:child_process";
 import { join, resolve } from "node:path";
-import { existsSync } from "node:fs";
+import { existsSync, writeFileSync } from "node:fs";
 import { temp } from "./helpers.js";
 
 test("CLI completes documented synthetic workflow and reports misuse with nonzero exit codes", (t) => {
@@ -26,6 +26,19 @@ test("CLI completes documented synthetic workflow and reports misuse with nonzer
       : result.stderr;
   };
   run("init", ["--config", fixture("config.json")]);
+  assert.equal((run("preferences") as { record: unknown }).record, null);
+  const preferencesFile = join(path, "synthetic-preferences.json");
+  writeFileSync(
+    preferencesFile,
+    JSON.stringify({
+      expectedRevision: null,
+      preferences: { status: "provided", learningMode: "mixed" },
+    }),
+  );
+  run("preferences-save", ["--input", preferencesFile]);
+  assert.deepEqual((run("preferences") as { guidance: unknown }).guidance, {
+    lessonOrder: "preview-learn-practice",
+  });
   run("course", ["--input", fixture("course.json")]);
   run("import", [
     "--input",
@@ -82,7 +95,7 @@ test("CLI completes documented synthetic workflow and reports misuse with nonzer
   );
   assert.equal(
     (run("upgrade") as { workspaceSchema: number }).workspaceSchema,
-    3,
+    4,
   );
   assert.equal(
     (

@@ -5,8 +5,8 @@
 Use Node 24.21.0/npm 11.12.1 on macOS or Linux and install locked dependencies as shown in the root README. The CLI baseline is the pinned `@openai/codex` 0.144.4. For the desktop app, use the [desktop package and setup guide](DESKTOP.md) ([中文](DESKTOP.zh-CN.md)): it uses a compatibility manifest and an absolute Node command. Its shipped macOS backend has passed isolated acceptance; visible UI and conversation acceptance still require user confirmation.
 
 ```sh
-npm run plugin:build -- build/marketplace-v0.4.0-dev.2
-npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.4.0-dev.2"
+npm run plugin:build -- build/marketplace-v0.5.0-dev.1
+npx --no-install codex plugin marketplace add "$PWD/build/marketplace-v0.5.0-dev.1"
 npx --no-install codex plugin add codex-study@codex-study-local --json
 ```
 
@@ -31,13 +31,13 @@ Learning records are separate from plugin files and Codex configuration. Never s
 
 For a later project version, build into a new, versioned directory, register that local marketplace path, then install `codex-study@codex-study-local` again. Confirm the reported version and installed path; start a new session and check `study_snapshot` and `study_doctor`. A registration conflict or unsupported client is an error to resolve, not permission to erase an existing configuration. The automated acceptance test exercises a newer plugin version from the same registered marketplace directory and verifies records, personal files and configuration are unchanged; changing a marketplace's registered path is not covered by that upgrade test.
 
-M1/M2 databases require an explicit, separate operation:
+Schema 1–3 databases require an explicit, separate operation:
 
 ```sh
 npm run study -- upgrade --workspace "$HOME/codex-study-demo"
 ```
 
-Close other workspace clients and keep a full user-managed backup first. Migration transactionally adds schema-3 note/calendar/scan/schedule tables. Existing configuration, sources, archived bytes, task conflicts and progress are retained. Old M1/M2 clients cannot open schema 3; no downgrade is implemented. Plugin installation alone never performs this migration.
+Close other workspace clients and keep a full user-managed backup first. Migration transactionally adds schema-4 note/calendar/scan/schedule/preference tables. Existing configuration, sources, archived bytes, task conflicts and progress are retained. Old schema 1–3 clients cannot open schema 4; no downgrade is implemented. Plugin installation alone never performs this migration.
 
 ## Diagnostics and direct MCP use
 
@@ -45,7 +45,7 @@ If Skills appear but tools do not, check the MCP startup error, Node version and
 
 The launcher reports an actionable error on unsupported Node or missing runtime files. `study_capabilities` reports readers and missing integrations; `study_doctor` inspects data integrity. No diagnostics repair/delete data automatically.
 
-For a client that accepts ordinary stdio MCP configuration, build the repository, then set the server command to an absolute supported Node executable and the argument to the absolute `dist/packages/mcp/src/index.js`. This exposes the same 22 tools; Skills still need the client to load them separately. Standard output is reserved for MCP. No TCP listener or authentication credential is required for the local process.
+For a client that accepts ordinary stdio MCP configuration, build the repository, then set the server command to an absolute supported Node executable and the argument to the absolute `dist/packages/mcp/src/index.js`. This exposes the same 24 tools; Skills still need the client to load them separately. Standard output is reserved for MCP. No TCP listener or authentication credential is required for the local process.
 
 ## Acceptance test
 

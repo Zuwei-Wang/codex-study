@@ -7,4 +7,6 @@ Resolve the target course and material with `study_snapshot` and read the releva
 
 Match the scope and difficulty the user requested. Unless they ask for an answer key, present the practice questions first and wait for their answers before explaining mistakes. Distinguish practice feedback from official assessment grades. Do not complete assessed work, invent answers attributed to the user, or mark an official task as graded.
 
+Use an explicitly saved session length and support style to suggest a manageable practice batch; with `small-steps`, begin with one question. Missing/skipped preferences stay unknown. Never infer ability or lower the requested difficulty from planning style or class/self-study preference; the current request and demonstrated answers determine the teaching interaction.
+
 Save only when requested using `study_note_save` with `self-test` sections and verified source quotes. User answers/reflections must come from the user. Preserve note revisions and use `published-material` coverage by default. Only call `study_progress_mark` for an explicit user-reported stage.

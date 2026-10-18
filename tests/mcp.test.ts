@@ -27,7 +27,7 @@ test("real stdio MCP handshake, typed tools, reading, citations and errors work 
     await client.close();
   });
   const tools = await client.listTools();
-  assert.equal(tools.tools.length, 22);
+  assert.equal(tools.tools.length, 24);
   assert.equal(
     tools.tools.find((x) => x.name === "study_read_material")?.annotations
       ?.readOnlyHint,
@@ -50,6 +50,30 @@ test("real stdio MCP handshake, typed tools, reading, citations and errors work 
   }
   await call("study_initialize", { workspace: install, config }, true);
   await call("study_initialize", { workspace: path, config });
+  assert.equal(
+    (await call("study_preferences_get", { workspace: path })).record,
+    null,
+  );
+  const savedPreferences = await call("study_preferences_save", {
+    workspace: path,
+    expectedRevision: null,
+    preferences: { status: "provided", learningMode: "lecture-led" },
+  });
+  assert.equal(
+    (await call("study_preferences_get", { workspace: path })).guidance
+      .lessonOrder,
+    "preview-attend-review",
+  );
+  await call(
+    "study_preferences_save",
+    {
+      workspace: path,
+      expectedRevision: null,
+      preferences: { status: "skipped" },
+    },
+    true,
+  );
+  assert.equal(savedPreferences.record.preferences.learningMode, "lecture-led");
   await call("study_course_put", { workspace: path, course });
   const file = join(root, "slides.md");
   writeFileSync(file, "# Synthetic slides\n---\nVersion one");

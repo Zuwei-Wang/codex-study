@@ -8,3 +8,4 @@ export * from "./observations.js";
 export * from "./scheduling.js";
 
 export * from "./reminders.js";
+export * from "./preferences.js";

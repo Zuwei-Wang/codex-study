@@ -2,7 +2,7 @@
 
 [简体中文](DESKTOP.zh-CN.md)
 
-The desktop package contains the same local core, 22 MCP tools and eight Skills. Setup currently requires a terminal; daily use is through desktop conversations. It does not install a separate graphical application or enable mail or scheduling.
+The desktop package contains the same local core, 24 MCP tools and eight Skills. Setup currently requires a terminal; daily use is through desktop conversations. It does not install a separate graphical application or enable mail or scheduling.
 
 ## Install on this computer
 
@@ -10,8 +10,8 @@ Use macOS/Linux, Git, Node **24.21.0** and npm **11.12.1**. The desktop backend 
 
 ```sh
 npm ci --ignore-scripts
-npm run plugin:build:desktop -- build/desktop-v0.4.0-dev.2
-npx --no-install codex plugin marketplace add "$PWD/build/desktop-v0.4.0-dev.2"
+npm run plugin:build:desktop -- build/desktop-v0.5.0-dev.1
+npx --no-install codex plugin marketplace add "$PWD/build/desktop-v0.5.0-dev.1"
 npx --no-install codex plugin add codex-study@codex-study-local --json
 ```
 

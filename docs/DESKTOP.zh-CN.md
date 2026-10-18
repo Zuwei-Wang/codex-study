@@ -2,7 +2,7 @@
 
 [English](DESKTOP.md)
 
-桌面端包包含同一套本地核心、22 个 MCP 工具和 8 个 Skills。目前首次安装仍需终端，日常使用在桌面端对话中完成。安装不会启用邮件提醒或每日调度，也不会安装另一个独立图形应用。
+桌面端包包含同一套本地核心、24 个 MCP 工具和 8 个 Skills。目前首次安装仍需终端，日常使用在桌面端对话中完成。安装不会启用邮件提醒或每日调度，也不会安装另一个独立图形应用。
 
 ## 在自己的电脑安装
 
@@ -10,8 +10,8 @@
 
 ```sh
 npm ci --ignore-scripts
-npm run plugin:build:desktop -- build/desktop-v0.4.0-dev.2
-npx --no-install codex plugin marketplace add "$PWD/build/desktop-v0.4.0-dev.2"
+npm run plugin:build:desktop -- build/desktop-v0.5.0-dev.1
+npx --no-install codex plugin marketplace add "$PWD/build/desktop-v0.5.0-dev.1"
 npx --no-install codex plugin add codex-study@codex-study-local --json
 ```
 

@@ -60,7 +60,7 @@ test("desktop package works without Node on PATH and refuses to overwrite an exi
   });
   t.after(async () => client.close());
   await client.connect(transport);
-  assert.equal((await client.listTools()).tools.length, 22);
+  assert.equal((await client.listTools()).tools.length, 24);
   const workspace = join(root, "learning workspace");
   const initialized = await client.callTool({
     name: "study_initialize",

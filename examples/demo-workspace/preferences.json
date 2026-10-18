@@ -1,0 +1,10 @@
+{
+  "expectedRevision": null,
+  "preferences": {
+    "status": "provided",
+    "planningStyle": "deadline-driven",
+    "learningMode": "mixed",
+    "sessionMinutes": 25,
+    "supportStyle": "small-steps"
+  }
+}
